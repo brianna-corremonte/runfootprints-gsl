@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Running the Shoreline: Great Salt Lake Climate Stories</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+  <style>
+    /* ── Tokens ───────────────────────────────────────────────── */
+    :root {
+      --salt:      #EDE6D6;   /* bleached, sun-baked salt flat, as seen in Landsat */
+      --brine:     #5FB8AE;   /* open lake water, true-color teal */
+      --rust:      #B05C3A;   /* iron-stained mudflats */
+      --slate:     #263846;   /* deep water / night sky, satellite-dark */
+      --mineral:   #3C6B7D;   /* deep lake color */
+      --amber:     #D4873C;   /* evaporation ponds, sunset */
+      --sage:      #6B8C6B;   /* refuge vegetation */
+      --text:      #1E2B33;
+      --muted:     #6B7A84;
+      --line:      rgba(95,184,174,0.85);
+      --header-h:  58px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--slate);
+      color: var(--text);
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    #header {
+      position: sticky;
+      top: 0;
+      height: var(--header-h);
+      background: var(--slate);
+      padding: 14px 22px 10px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      border-bottom: 1px solid rgba(126,200,200,0.25);
+      z-index: 2000;
+    }
+
+    #header h1 {
+      font-family: 'Georgia', serif;
+      font-size: 1.25rem;
+      font-weight: normal;
+      color: var(--salt);
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+
+    #header h1 em {
+      font-style: italic;
+      color: var(--brine);
+    }
+
+    #header .sub {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── Scrollytelling layout: sticky map + scrolling narrative ─ */
+    #scrolly {
+      display: grid;
+      grid-template-columns: 1fr min(460px, 40vw);
+      align-items: start;
+    }
+
+    #map-pane {
+      position: sticky;
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      overflow: hidden;
+      background: var(--slate);
+    }
+    #map { width: 100%; height: 100%; }
+
+    /* Satellite timelapse, shown during the intro, fades out once the story starts */
+    #timelapse {
+      position: absolute;
+      inset: 0;
+      z-index: 970;
+      background: var(--slate);
+      transition: opacity 1s ease;
+    }
+    #timelapse.hidden { opacity: 0; pointer-events: none; }
+    #timelapse video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #timelapse-caption {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.9);
+      background: rgba(0,0,0,0.4);
+      padding: 5px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(3px);
+    }
+    #timelapse-caption a { color: rgba(255,255,255,0.9); text-decoration: underline; }
+
+    #story-pane {
+      background: var(--salt);
+      box-shadow: -6px 0 24px rgba(0,0,0,0.25);
+      position: relative;
+      z-index: 10;
+    }
+
+    .scrolly-section {
+      padding: 72px 34px;
+      min-height: 62vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 1px solid rgba(107,122,132,0.18);
+      transition: background 0.3s ease;
+    }
+    .scrolly-section:last-child { min-height: 82vh; border-bottom: none; }
+    .scrolly-section.active { background: rgba(126,200,200,0.08); }
+
+    .scrolly-section .kicker {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brine);
+      margin-bottom: 8px;
+    }
+
+    .scrolly-section h2 {
+      font-family: 'Georgia', serif;
+      font-size: 1.5rem;
+      font-weight: normal;
+      color: var(--text);
+      line-height: 1.28;
+      margin-bottom: 18px;
+    }
+
+    .scrolly-section .story-section:not(:first-of-type) { margin-top: 18px; }
+
+    /* Intro section */
+    #intro-section {
+      background: var(--slate);
+      min-height: calc(100vh - var(--header-h));
+    }
+    #intro-section .kicker { color: var(--brine); }
+    #intro-section h2 { color: var(--salt); font-size: 2.1rem; max-width: 420px; }
+    #intro-section p {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: #B0BEC5;
+      max-width: 420px;
+      margin-bottom: 22px;
+    }
+    #intro-section .stat-row { display: flex; gap: 28px; margin-bottom: 8px; }
+    .stat .num {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--brine);
+      line-height: 1;
+    }
+    .stat .label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .scroll-cue {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--brine);
+    }
+    .scroll-cue .arrow { display: inline-block; animation: bob 1.6s ease-in-out infinite; }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* Hero photo per section */
+    .section-hero {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      background: var(--slate);
+      flex-shrink: 0;
+    }
+    .section-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-credit {
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.9);
+      background: rgba(0,0,0,0.4);
+      padding: 3px 8px;
+      border-radius: 20px;
+      backdrop-filter: blur(3px);
+    }
+    .hero-credit a { color: rgba(255,255,255,0.9); text-decoration: underline; }
+
+    /* Progress dots, docked on the map */
+    #progress-dots {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 950;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .progress-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(242,239,230,0.35);
+      border: 1px solid rgba(242,239,230,0.5);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .progress-dot:hover { background: rgba(242,239,230,0.6); }
+    .progress-dot.active { background: var(--brine); border-color: var(--brine); transform: scale(1.4); }
+
+    .story-section {
+      border-left: 3px solid var(--rust);
+      padding-left: 12px;
+    }
+    .story-section.solution { border-color: var(--sage); }
+    .story-section.who      { border-color: var(--mineral); }
+
+    .story-section h3 {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .story-section p {
+      font-size: 0.94rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .story-section a {
+      color: var(--mineral);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .story-section a:hover { color: var(--rust); }
+
+    /* Inline stat-bar infographic */
+    .stat-bar-wrap {
+      margin: 10px 0 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stat-bar-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      width: 84px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .stat-bar {
+      flex: 1;
+      background: rgba(107,122,132,0.18);
+      border-radius: 2px;
+      overflow: hidden;
+      height: 18px;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      background: var(--sage);
+      color: var(--salt);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      padding-left: 6px;
+      white-space: nowrap;
+      border-radius: 2px;
+    }
+    .cite {
+      display: block;
+      margin-top: 8px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.6rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .cite a { color: var(--muted); text-decoration: underline; }
+
+    .map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--slate);
+      background: var(--brine);
+      padding: 7px 12px;
+      border-radius: 2px;
+      text-decoration: none;
+      align-self: flex-start;
+      margin-top: 4px;
+    }
+    .map-link:hover { background: var(--mineral); color: var(--salt); }
+
+    /* ── Legend / Distance ticker ────────────────────────────── */
+    #legend {
+      position: absolute;
+      left: 16px;
+      bottom: 28px;
+      z-index: 900;
+      background: rgba(44,62,74,0.88);
+      border-radius: 3px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.68rem;
+      color: var(--salt);
+      letter-spacing: 0.06em;
+    }
+
+    .legend-line {
+      width: 28px;
+      height: 3px;
+      background: var(--brine);
+      border-radius: 2px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--amber);
+      border: 2px solid var(--salt);
+    }
+
+    .stat { flex: 1; }
+
+    /* ── Custom marker ───────────────────────────────────────── */
+    .story-marker {
+      width: 32px;
+      height: 32px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 3px solid var(--salt);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .story-marker:hover {
+      transform: rotate(-45deg) scale(1.15);
+    }
+    .story-marker.threat  { background: var(--rust); }
+    .story-marker.refuge  { background: var(--sage); }
+    .story-marker.water   { background: var(--mineral); }
+    .story-marker.active  { transform: rotate(-45deg) scale(1.2); box-shadow: 0 0 0 3px var(--amber); }
+
+    .marker-icon-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(45deg);
+      font-family: 'Georgia', serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--salt);
+    }
+
+    /* Leaflet overrides */
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      display: none !important;
+    }
+
+    @media (max-width: 900px) {
+      #scrolly { grid-template-columns: 1fr; }
+      #map-pane { height: 42vh; }
+      #story-pane { box-shadow: none; }
+      .scrolly-section, .scrolly-section:last-child { min-height: auto; padding: 40px 20px; }
+      #intro-section { min-height: 42vh; display: flex; justify-content: center; }
+      #intro-section h2 { font-size: 1.5rem; }
+      .section-hero { height: 160px; }
+      #progress-dots { display: none; }
+      #legend { padding: 8px 10px; }
+      .legend-row { font-size: 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div class="sub">Footprints · Great Salt Lake</div>
+    <h1>Running the <em>Shoreline</em></h1>
+  </div>
+</div>
+
+<div id="scrolly">
+  <div id="map-pane">
+    <div id="map"></div>
+
+    <!-- Satellite timelapse of the lake shrinking, fades away once you scroll into the stories -->
+    <div id="timelapse">
+      <video autoplay muted loop playsinline>
+        <source src="https://svs.gsfc.nasa.gov/vis/a010000/a015000/a015020/Salt_Lake_-_Web.mp4" type="video/mp4">
+      </video>
+      <span id="timelapse-caption">Landsat, 1984&ndash;2023. <a href="https://svs.gsfc.nasa.gov/15020/" target="_blank">NASA Scientific Visualization Studio</a></span>
+    </div>
+
+    <!-- Legend -->
+    <div id="legend">
+      <div class="legend-row">
+        <div class="legend-line"></div>
+        <span>Route (~256 mi, 5 days)</span>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:var(--rust)"></div>
+        <span>Threat / Problem</span>
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:var(--sage)"></div>
+        <span>Refuge / Ecosystem</span>
+      </div>
+    </div>
+
+    <!-- Scroll progress dots, populated by JS -->
+    <div id="progress-dots"></div>
+  </div>
+
+  <div id="story-pane">
+    <section class="scrolly-section" id="intro-section" data-id="intro">
+      <div class="kicker">Footprints · Great Salt Lake</div>
+      <h2>The Great Salt Lake is disappearing beneath our feet.</h2>
+      <p>This route traces the full loop of the lake, once the largest saltwater lake in the western hemisphere, over 256 miles and 5 days. Scroll down to move along the route and read the climate stories at each stop. The map follows along as you go.</p>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="num">73%</div>
+          <div class="label">of lake area lost</div>
+        </div>
+        <div class="stat">
+          <div class="num">11 ft</div>
+          <div class="label">drop in water level since 1847</div>
+        </div>
+      </div>
+      <div class="scroll-cue"><span>Scroll to begin</span><span class="arrow">↓</span></div>
+    </section>
+    <!-- Story + camp sections are injected here by JS, in route-mile order -->
+  </div>
+</div>
+
+<script>
+// ── Story data ──────────────────────────────────────────────────────────────
+const stories = [
+  {
+    id: "bear-river",
+    lat: 41.529,
+    lon: -112.051,
+    type: "threat",
+    label: "~Mile 62 · Bear River Migratory Bird Refuge",
+    title: "Bear River Migratory Bird Refuge",
+    googleMapsUrl: "https://maps.app.goo.gl/9esfQFL54a2uA2Mw5",
+    sections: [
+      {
+        kind: "threat",
+        heading: "The Problem",
+        html: `The Bear River supplies more water to the Great Salt Lake than any other tributary, and it feeds this refuge directly. Here, water diverted from the river runs through man-made channels to recreate the wetlands a healthy river delta would build on its own. The refuge hosts an estimated <strong>75% of America's tundra swans</strong>, 250,000 American avocets, 65,000 black-necked stilts, and the largest known gathering of snowy plovers anywhere, on top of millions of other migratory birds that pass through each year.<br><br>Utah's water districts are now pushing Bear River Development, a $2.9 billion plan for three or four new dams that would draw water out of the river before it ever reaches the lake or this refuge. Researchers estimate it could drop the Great Salt Lake another two to three feet.
+        <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 16&ndash;17 and 23&ndash;24. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a></span>`
+      },
+      {
+        kind: "solution",
+        heading: "What Can Be Done",
+        html: `Utah cities already use more water per person than almost anywhere else in the country, and the state's conservation rules are some of the weakest in the West. Closing that gap could free up more water than a new dam ever would, without touching the river at all. Utah's water is also priced artificially low, subsidized through property taxes, which removes any real incentive to conserve it. Buying up water rights along the Bear River corridor and blocking new diversions protects the lake and the refuge for good, instead of managing the decline one drought at a time.<br><br>A newly proposed data center in the area, called Stratos, would draw Bear River water for cooling at a large scale and is facing organized public pushback.
+        <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 24&ndash;25. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a> &middot; <a href="https://www.forbes.com/sites/michaelposner/2026/06/09/one-utah-countys-fight-over-a-100-billion-data-center---and-what-it-means-for-all-of-us/" target="_blank">Forbes on Stratos</a></span>`
+      },
+      {
+        kind: "who",
+        heading: "Who's Working on It",
+        html: `Utah state senator <a href="https://senate.utah.gov/sen/BLOUIN/" target="_blank">Nate Blouin</a> introduced legislation in the 2026 session to fight Bear River Development, working from a bill drafted by <a href="https://utahyes.org/" target="_blank">UYES</a>. <a href="https://www.ducks.org/newsroom/ducks-unlimited-joins-utah-partners-in-signing-historic-great-salt-lake-charter-2034" target="_blank">Ducks Unlimited has committed $100 million</a> to the lake, much of it aimed at protecting bird habitat in this stretch specifically.`
+      }
+    ]
+  },
+  {
+    id: "gunnison-island",
+    lat: 41.222413,
+    lon: -112.849991,
+    type: "refuge",
+    label: "~Mile 167 · The Lucin Cutoff Causeway",
+    title: "Gunnison Island Needs to Stay an Island",
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=41.222413,-112.849991",
+    heroImage: "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/Screenshot%202024-11-26%20111827.png",
+    heroCredit: `U.S. Geological Survey, public domain. <a href="https://www.usgs.gov/media/images/great-salt-lakes-railroad-causeway" target="_blank">Source</a>`,
+    sections: [
+      {
+        kind: "threat",
+        heading: "The Problem",
+        html: `This pin marks the Lucin Cutoff, the Union Pacific Railroad causeway that splits the Great Salt Lake into a pink, hypersaline North Arm and a blue-green South Arm, the way it looks from the air in the photo above. Gunnison Island sits about 10 miles northeast of here, in the North Arm. It's normally cut off from land, and that isolation is exactly what makes it one of the largest American White Pelican breeding colonies in North America, historically home to roughly <strong>10,000 nests</strong>. At low lake levels, a land bridge forms and lets coyotes and other predators walk out to the island and take juvenile pelicans before they can fly. A 2019 survey counted just <strong>3,400 nests</strong>, a two-thirds collapse.
+        <div class="stat-bar-wrap">
+          <div class="stat-bar-row"><span class="stat-bar-label">~1980s&ndash;2000s</span><div class="stat-bar"><div class="stat-bar-fill" style="width:100%">10,000 nests</div></div></div>
+          <div class="stat-bar-row"><span class="stat-bar-label">2019 survey</span><div class="stat-bar"><div class="stat-bar-fill" style="width:34%;background:var(--rust);">3,400 nests</div></div></div>
+        </div>
+        <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), p. 19. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a></span>`
+      },
+      {
+        kind: "solution",
+        heading: "What Can Be Done",
+        html: `The only real fix is water. Lake levels need to stay high enough that Gunnison Island and the lake's other key islands stay surrounded by water instead of connected by dry lakebed. The island has also been designated a state Wildlife Management Area with human access banned outright, which helps, but that rule alone can't stop a coyote from walking across a land bridge.<br><br>The causeway in front of you is where that tradeoff plays out. A 2016 breach and an adjustable berm right at this spot control how much water reaches the North Arm, the side Gunnison Island sits in. In 2025, a bill would have let the state keep that berm closed for 18 months at a stretch, up from 9, and dropped the requirement to ever reopen it: effectively cutting the lake in half. Public pressure got the bill amended, and the North Arm's flow held, for now.
+        <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 65&ndash;66. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a></span>`
+      },
+      {
+        kind: "who",
+        heading: "Who's Working on It",
+        html: `<a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">Great Salt Lake Waterkeeper</a>, a program of the Utah Rivers Council, tracks the bird species harmed by the lake's decline and pushes to hold the legislature accountable on causeway and water-level policy. Their <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">migratory birds map</a> has more on species-by-species impacts.
+        <span class="cite">Note: the causeway is an active Union Pacific rail line and isn't open to pedestrians. The nearest run-route pit stop is shore access near Lakeside, about 3&ndash;4 miles southwest of the breach shown here.</span>`
+      }
+    ]
+  }
+];
+
+// ── Route coordinates (sampled from GPX) ───────────────────────────────────
+const routeCoords = [
+[40.77684,-111.8881],
+[40.77617,-111.8881],
+[40.77613,-111.88802],
+[40.7763,-111.88742],
+[40.77639,-111.88725],
+[40.77658,-111.88723],
+[40.77663,-111.88695],
+[40.77695,-111.88668],
+[40.77756,-111.88643],
+[40.77759,-111.8863],
+[40.77778,-111.88629],
+[40.77778,-111.88618],
+[40.77816,-111.88616],
+[40.7793,-111.88568],
+[40.78088,-111.8856],
+[40.78179,-111.88577],
+[40.78393,-111.88589],
+[40.78534,-111.88613],
+[40.78683,-111.88625],
+[40.78683,-111.88642],
+[40.78743,-111.88619],
+[40.78765,-111.8866],
+[40.78795,-111.8876],
+[40.78823,-111.88785],
+[40.78881,-111.88802],
+[40.7889,-111.88879],
+[40.78936,-111.88876],
+[40.7902,-111.88934],
+[40.79059,-111.88935],
+[40.79086,-111.88923],
+[40.79146,-111.88855],
+[40.79162,-111.88822],
+[40.79177,-111.88822],
+[40.79181,-111.8881],
+[40.79178,-111.88835],
+[40.79187,-111.88812],
+[40.79186,-111.88835],
+[40.79196,-111.88812],
+[40.79233,-111.8882],
+[40.79226,-111.88906],
+[40.79239,-111.88967],
+[40.79247,-111.89121],
+[40.79227,-111.89204],
+[40.79242,-111.89248],
+[40.79313,-111.89282],
+[40.79403,-111.89307],
+[40.79414,-111.89317],
+[40.79479,-111.89301],
+[40.79579,-111.89261],
+[40.79693,-111.89201],
+[40.79716,-111.89173],
+[40.79774,-111.89196],
+[40.79783,-111.89189],
+[40.79783,-111.89175],
+[40.79758,-111.89155],
+[40.79841,-111.89111],
+[40.79904,-111.89093],
+[40.80011,-111.89104],
+[40.80023,-111.89115],
+[40.8002,-111.89137],
+[40.79983,-111.89175],
+[40.79966,-111.89221],
+[40.79976,-111.89295],
+[40.80157,-111.89343],
+[40.80207,-111.89405],
+[40.80238,-111.89426],
+[40.80238,-111.89444],
+[40.80191,-111.89583],
+[40.80194,-111.8961],
+[40.80208,-111.89613],
+[40.80241,-111.89594],
+[40.80326,-111.89513],
+[40.80353,-111.89505],
+[40.80368,-111.89551],
+[40.80387,-111.8958],
+[40.8041,-111.89593],
+[40.80452,-111.89596],
+[40.80469,-111.89659],
+[40.80481,-111.89679],
+[40.80537,-111.89666],
+[40.80577,-111.89684],
+[40.80613,-111.89686],
+[40.80717,-111.8983],
+[40.8078,-111.89795],
+[40.80786,-111.89805],
+[40.80796,-111.89927],
+[40.80787,-111.89958],
+[40.80767,-111.89985],
+[40.80765,-111.90003],
+[40.80796,-111.90077],
+[40.8083,-111.90188],
+[40.80847,-111.90212],
+[40.80893,-111.90248],
+[40.80939,-111.90308],
+[40.80983,-111.9034],
+[40.81033,-111.90425],
+[40.81064,-111.90435],
+[40.81238,-111.90379],
+[40.81356,-111.90281],
+[40.81396,-111.90265],
+[40.81584,-111.90273],
+[40.81631,-111.90295],
+[40.81675,-111.90334],
+[40.81775,-111.90337],
+[40.81909,-111.9038],
+[40.81945,-111.90375],
+[40.81991,-111.9034],
+[40.82041,-111.90358],
+[40.82106,-111.90356],
+[40.8212,-111.90334],
+[40.82208,-111.90287],
+[40.82251,-111.90248],
+[40.82338,-111.90134],
+[40.82365,-111.90111],
+[40.82395,-111.90096],
+[40.82481,-111.90082],
+[40.82512,-111.90062],
+[40.8259,-111.89961],
+[40.82664,-111.89887],
+[40.82683,-111.89845],
+[40.82701,-111.89762],
+[40.82733,-111.89732],
+[40.82843,-111.89727],
+[40.82909,-111.89714],
+[40.82959,-111.89683],
+[40.83015,-111.89616],
+[40.83021,-111.89624],
+[40.83039,-111.89614],
+[40.83064,-111.89634],
+[40.83148,-111.89659],
+[40.83298,-111.89623],
+[40.8334,-111.89638],
+[40.83383,-111.89675],
+[40.83406,-111.89632],
+[40.83418,-111.89564],
+[40.83637,-111.89565],
+[40.83728,-111.89686],
+[40.83769,-111.89792],
+[40.83787,-111.89815],
+[40.8384,-111.89831],
+[40.83887,-111.89831],
+[40.83908,-111.8982],
+[40.83936,-111.89782],
+[40.83953,-111.89777],
+[40.83962,-111.89809],
+[40.83996,-111.89838],
+[40.84022,-111.89836],
+[40.84045,-111.89809],
+[40.84063,-111.89826],
+[40.84068,-111.89847],
+[40.84053,-111.8988],
+[40.84052,-111.89902],
+[40.8407,-111.89934],
+[40.84094,-111.89938],
+[40.84146,-111.89909],
+[40.84165,-111.89917],
+[40.84173,-111.89938],
+[40.84175,-111.90148],
+[40.84187,-111.90149],
+[40.84186,-111.9032],
+[40.8419,-111.90326],
+[40.84242,-111.903],
+[40.84263,-111.9039],
+[40.84281,-111.90423],
+[40.84534,-111.90111],
+[40.84559,-111.90135],
+[40.84847,-111.90134],
+[40.84846,-111.90207],
+[40.85365,-111.90207],
+[40.85396,-111.902],
+[40.85412,-111.90222],
+[40.85518,-111.90136],
+[40.85575,-111.90194],
+[40.85605,-111.90207],
+[40.85964,-111.90206],
+[40.8611,-111.90088],
+[40.86119,-111.90144],
+[40.86174,-111.90247],
+[40.86174,-111.9031],
+[40.86196,-111.90314],
+[40.86218,-111.9031],
+[40.86324,-111.90218],
+[40.86358,-111.90204],
+[40.88163,-111.90199],
+[40.88164,-111.90211],
+[40.88218,-111.9021],
+[40.88241,-111.90196],
+[40.88371,-111.90165],
+[40.8842,-111.90142],
+[40.88418,-111.902],
+[40.90058,-111.90207],
+[40.91324,-111.90196],
+[40.9133,-111.90254],
+[40.93618,-111.89771],
+[40.93717,-111.89757],
+[40.93861,-111.89751],
+[40.94005,-111.89764],
+[40.9414,-111.89791],
+[40.96885,-111.90474],
+[40.9708,-111.90533],
+[40.97169,-111.90583],
+[40.97268,-111.90659],
+[40.99591,-111.92775],
+[40.9962,-111.92776],
+[40.99622,-111.92803],
+[40.99938,-111.93094],
+[41.03831,-111.96645],
+[41.03857,-111.96654],
+[41.03864,-111.96673],
+[41.03932,-111.96737],
+[41.05918,-111.98552],
+[41.06009,-111.98637],
+[41.06006,-111.98779],
+[41.06028,-111.98774],
+[41.06026,-111.98653],
+[41.10308,-112.02569],
+[41.10322,-112.02575],
+[41.10337,-112.02563],
+[41.10348,-112.02491],
+[41.10386,-112.02487],
+[41.10394,-112.02494],
+[41.10395,-112.02597],
+[41.10416,-112.02666],
+[41.10575,-112.02813],
+[41.10585,-112.02842],
+[41.10609,-112.02863],
+[41.1062,-112.02858],
+[41.10633,-112.02867],
+[41.10877,-112.03091],
+[41.1089,-112.03115],
+[41.10915,-112.03126],
+[41.11055,-112.03252],
+[41.11077,-112.03308],
+[41.11082,-112.03287],
+[41.111,-112.03293],
+[41.1179,-112.03925],
+[41.11799,-112.03929],
+[41.118,-112.03919],
+[41.11816,-112.03919],
+[41.11815,-112.03952],
+[41.11973,-112.04092],
+[41.12092,-112.04185],
+[41.1227,-112.04292],
+[41.12406,-112.04353],
+[41.12616,-112.04411],
+[41.13226,-112.04456],
+[41.13246,-112.04499],
+[41.13268,-112.045],
+[41.13268,-112.04471],
+[41.13283,-112.0446],
+[41.13858,-112.04493],
+[41.1392,-112.04503],
+[41.13926,-112.04487],
+[41.13966,-112.04493],
+[41.13978,-112.04475],
+[41.13976,-112.04397],
+[41.14001,-112.04395],
+[41.14,-112.04374],
+[41.14084,-112.04374],
+[41.14085,-112.04332],
+[41.14094,-112.04326],
+[41.14705,-112.04325],
+[41.14709,-112.03096],
+[41.1471,-112.0308],
+[41.14723,-112.03076],
+[41.14725,-112.02817],
+[41.1479,-112.02806],
+[41.14791,-112.02695],
+[41.14857,-112.02694],
+[41.14856,-112.02626],
+[41.14905,-112.02624],
+[41.14905,-112.02608],
+[41.16639,-112.02605],
+[41.16722,-112.02581],
+[41.16781,-112.02507],
+[41.17045,-112.02063],
+[41.17174,-112.01809],
+[41.17295,-112.01518],
+[41.17953,-111.99698],
+[41.17977,-111.99653],
+[41.18064,-111.99418],
+[41.18152,-111.99229],
+[41.18326,-111.98925],
+[41.18414,-111.98807],
+[41.18481,-111.98744],
+[41.18543,-111.98665],
+[41.19241,-111.97938],
+[41.19267,-111.97926],
+[41.19398,-111.97786],
+[41.19405,-111.97769],
+[41.19494,-111.9767],
+[41.20049,-111.97093],
+[41.21856,-111.97053],
+[41.21929,-111.97044],
+[41.22078,-111.97048],
+[41.22131,-111.97038],
+[41.22276,-111.97041],
+[41.22275,-111.97011],
+[41.22276,-111.97041],
+[41.22336,-111.97039],
+[41.22381,-111.97049],
+[41.22553,-111.9703],
+[41.22854,-111.97031],
+[41.25118,-111.96979],
+[41.2555,-111.96972],
+[41.25653,-111.96979],
+[41.25661,-111.96971],
+[41.25918,-111.96964],
+[41.2594,-111.96992],
+[41.25998,-111.97029],
+[41.27045,-111.97672],
+[41.27096,-111.97722],
+[41.27257,-111.97924],
+[41.27417,-111.9808],
+[41.27508,-111.98153],
+[41.28762,-111.98993],
+[41.28833,-111.99033],
+[41.29459,-111.99462],
+[41.30923,-112.00769],
+[41.33859,-112.02975],
+[41.34056,-112.0309],
+[41.346,-112.03311],
+[41.35059,-112.03517],
+[41.35228,-112.03568],
+[41.35328,-112.03576],
+[41.3554,-112.03574],
+[41.36705,-112.03538],
+[41.36829,-112.03511],
+[41.37111,-112.03395],
+[41.37218,-112.03368],
+[41.38343,-112.03195],
+[41.38494,-112.03195],
+[41.38628,-112.03229],
+[41.3901,-112.03399],
+[41.39156,-112.03441],
+[41.39281,-112.03448],
+[41.39564,-112.03426],
+[41.39715,-112.03431],
+[41.40407,-112.03613],
+[41.40526,-112.03636],
+[41.41261,-112.03626],
+[41.41275,-112.04093],
+[41.41624,-112.04079],
+[41.41794,-112.04082],
+[41.42012,-112.04139],
+[41.4263,-112.04338],
+[41.42792,-112.04375],
+[41.42918,-112.04388],
+[41.4393,-112.04417],
+[41.44559,-112.04445],
+[41.45323,-112.0446],
+[41.45772,-112.04452],
+[41.46077,-112.04365],
+[41.46305,-112.04286],
+[41.47362,-112.03955],
+[41.47472,-112.03911],
+[41.47619,-112.03834],
+[41.47828,-112.03677],
+[41.4826,-112.03257],
+[41.48273,-112.03227],
+[41.48275,-112.03199],
+[41.48274,-112.02837],
+[41.48541,-112.02837],
+[41.48721,-112.02801],
+[41.4907,-112.02472],
+[41.49161,-112.02418],
+[41.49246,-112.024],
+[41.50815,-112.02369],
+[41.50813,-112.02353],
+[41.50777,-112.02354],
+[41.50813,-112.02353],
+[41.50815,-112.02369],
+[41.50821,-112.02369],
+[41.52295,-112.02343],
+[41.52294,-112.02583],
+[41.52258,-112.02833],
+[41.52232,-112.0327],
+[41.52231,-112.03623],
+[41.52242,-112.04292],
+[41.52247,-112.04536],
+[41.52256,-112.04571],
+[41.53036,-112.05264],
+[41.53098,-112.05294],
+[41.53151,-112.05299],
+[41.53199,-112.05291],
+[41.53281,-112.05261],
+[41.53476,-112.06219],
+[41.5353,-112.06531],
+[41.53764,-112.07642],
+[41.53823,-112.07874],
+[41.53896,-112.08076],
+[41.54246,-112.08879],
+[41.54533,-112.09516],
+[41.5483,-112.10136],
+[41.5492,-112.10412],
+[41.55111,-112.11053],
+[41.55258,-112.11721],
+[41.55566,-112.13242],
+[41.55661,-112.13584],
+[41.55736,-112.13938],
+[41.57828,-112.24194],
+[41.5787,-112.24441],
+[41.57923,-112.2508],
+[41.5795,-112.25207],
+[41.5804,-112.2541],
+[41.58911,-112.27113],
+[41.59404,-112.28266],
+[41.59629,-112.29035],
+[41.60807,-112.32734],
+[41.6087,-112.33009],
+[41.60886,-112.33128],
+[41.61308,-112.36987],
+[41.61381,-112.37358],
+[41.61453,-112.3762],
+[41.61503,-112.37765],
+[41.61566,-112.37885],
+[41.62447,-112.39289],
+[41.6251,-112.39406],
+[41.62581,-112.39565],
+[41.62637,-112.39712],
+[41.62696,-112.39914],
+[41.62731,-112.40084],
+[41.62961,-112.41445],
+[41.63001,-112.41621],
+[41.63035,-112.41714],
+[41.63095,-112.41831],
+[41.63165,-112.41928],
+[41.63517,-112.42247],
+[41.63643,-112.42371],
+[41.63605,-112.42456],
+[41.63587,-112.42517],
+[41.63579,-112.42639],
+[41.63515,-112.46184],
+[41.63531,-112.4632],
+[41.63572,-112.46462],
+[41.63625,-112.46573],
+[41.63814,-112.46912],
+[41.63861,-112.47025],
+[41.63887,-112.47115],
+[41.63909,-112.4723],
+[41.63918,-112.47402],
+[41.63906,-112.47537],
+[41.63869,-112.47697],
+[41.63835,-112.47791],
+[41.63636,-112.48234],
+[41.63613,-112.48305],
+[41.63599,-112.48409],
+[41.63601,-112.48541],
+[41.63681,-112.49062],
+[41.63717,-112.49024],
+[41.63763,-112.48947],
+[41.63801,-112.48858],
+[41.63831,-112.48755],
+[41.63838,-112.48668],
+[41.63831,-112.48604],
+[41.63796,-112.48522],
+[41.63831,-112.48604],
+[41.63838,-112.48668],
+[41.63831,-112.48755],
+[41.63801,-112.48858],
+[41.63763,-112.48947],
+[41.63717,-112.49024],
+[41.63681,-112.49062],
+[41.63684,-112.49144],
+[41.63678,-112.49235],
+[41.63509,-112.50083],
+[41.63482,-112.50264],
+[41.63485,-112.50396],
+[41.63573,-112.51318],
+[41.63577,-112.51589],
+[41.63566,-112.51771],
+[41.63529,-112.52015],
+[41.63483,-112.52212],
+[41.63412,-112.5245],
+[41.63392,-112.52555],
+[41.63387,-112.52629],
+[41.63358,-112.54825],
+[41.63351,-112.54852],
+[41.63356,-112.54878],
+[41.63346,-112.5577],
+[41.6333,-112.56722],
+[41.63342,-112.56766],
+[41.63365,-112.56782],
+[41.63662,-112.56809],
+[41.63718,-112.56832],
+[41.63788,-112.56897],
+[41.6388,-112.57027],
+[41.639,-112.57083],
+[41.63909,-112.57149],
+[41.63917,-112.58036],
+[41.63905,-112.5816],
+[41.63824,-112.58464],
+[41.63808,-112.58543],
+[41.638,-112.58631],
+[41.63791,-112.59001],
+[41.63742,-112.59795],
+[41.6371,-112.61091],
+[41.63706,-112.61729],
+[41.63764,-112.62603],
+[41.63775,-112.63088],
+[41.6379,-112.63222],
+[41.63824,-112.63396],
+[41.63847,-112.63455],
+[41.63903,-112.63555],
+[41.64146,-112.63941],
+[41.64329,-112.64288],
+[41.64372,-112.64334],
+[41.65324,-112.65006],
+[41.65855,-112.65359],
+[41.66356,-112.65706],
+[41.67894,-112.66812],
+[41.67992,-112.66892],
+[41.69174,-112.68351],
+[41.69686,-112.68996],
+[41.69758,-112.69103],
+[41.69839,-112.6925],
+[41.70135,-112.699],
+[41.70836,-112.71519],
+[41.70963,-112.7179],
+[41.7103,-112.72006],
+[41.71195,-112.72444],
+[41.7123,-112.72504],
+[41.71381,-112.72639],
+[41.71451,-112.7275],
+[41.71731,-112.73377],
+[41.71786,-112.73516],
+[41.71826,-112.73665],
+[41.71829,-112.73785],
+[41.71792,-112.73945],
+[41.71779,-112.7402],
+[41.7178,-112.7405],
+[41.71814,-112.742],
+[41.71896,-112.74461],
+[41.7193,-112.74612],
+[41.71973,-112.75225],
+[41.72168,-112.76589],
+[41.72267,-112.78251],
+[41.72271,-112.78294],
+[41.72306,-112.78386],
+[41.72152,-112.78676],
+[41.72052,-112.78939],
+[41.71967,-112.79066],
+[41.71932,-112.79186],
+[41.71932,-112.79409],
+[41.71959,-112.79936],
+[41.71968,-112.80539],
+[41.71993,-112.80846],
+[41.71999,-112.81393],
+[41.71984,-112.81673],
+[41.71929,-112.82042],
+[41.71921,-112.82267],
+[41.71898,-112.82399],
+[41.71788,-112.82685],
+[41.71722,-112.82983],
+[41.71633,-112.83226],
+[41.71566,-112.83392],
+[41.71509,-112.835],
+[41.71365,-112.83707],
+[41.71231,-112.83869],
+[41.71076,-112.84015],
+[41.71037,-112.84042],
+[41.70626,-112.84167],
+[41.70579,-112.84197],
+[41.70417,-112.84269],
+[41.70355,-112.84316],
+[41.70335,-112.84375],
+[41.70325,-112.84529],
+[41.70433,-112.8517],
+[41.70435,-112.85428],
+[41.70446,-112.85553],
+[41.70462,-112.85625],
+[41.70513,-112.85768],
+[41.73211,-112.90424],
+[41.73313,-112.90629],
+[41.73381,-112.908],
+[41.73481,-112.91143],
+[41.75134,-112.97525],
+[41.75141,-112.9758],
+[41.75145,-112.97794],
+[41.7528,-112.98294],
+[41.75291,-112.98359],
+[41.7531,-112.9841],
+[41.7535,-112.98595],
+[41.75396,-112.98717],
+[41.75406,-112.98776],
+[41.75438,-112.9887],
+[41.75449,-112.98988],
+[41.75499,-112.99186],
+[41.75538,-112.99456],
+[41.7554,-112.99721],
+[41.75514,-113.00233],
+[41.75484,-113.00449],
+[41.75471,-113.00712],
+[41.75432,-113.01194],
+[41.75417,-113.01299],
+[41.75413,-113.01452],
+[41.75379,-113.0169],
+[41.75368,-113.01868],
+[41.75348,-113.02015],
+[41.75332,-113.02191],
+[41.75336,-113.02254],
+[41.75319,-113.0234],
+[41.75303,-113.02525],
+[41.75304,-113.02605],
+[41.75282,-113.02794],
+[41.75289,-113.02869],
+[41.75271,-113.02958],
+[41.75209,-113.03693],
+[41.75201,-113.03756],
+[41.75183,-113.03791],
+[41.75043,-113.05418],
+[41.75062,-113.05575],
+[41.75019,-113.05718],
+[41.74992,-113.06005],
+[41.74603,-113.10508],
+[41.74595,-113.10636],
+[41.74626,-113.10665],
+[41.74631,-113.10694],
+[41.74617,-113.10778],
+[41.74621,-113.10887],
+[41.74703,-113.11223],
+[41.74639,-113.1173],
+[41.74626,-113.1178],
+[41.74278,-113.12422],
+[41.74099,-113.1271],
+[41.74041,-113.12772],
+[41.73291,-113.13271],
+[41.72288,-113.14073],
+[41.72219,-113.14145],
+[41.72053,-113.14376],
+[41.71029,-113.14149],
+[41.70994,-113.14146],
+[41.70933,-113.14161],
+[41.70869,-113.14199],
+[41.70814,-113.14254],
+[41.69935,-113.15303],
+[41.69918,-113.15316],
+[41.69893,-113.15318],
+[41.69769,-113.1527],
+[41.6973,-113.15273],
+[41.69358,-113.1559],
+[41.69255,-113.15647],
+[41.69189,-113.15667],
+[41.69143,-113.1567],
+[41.69017,-113.15651],
+[41.67764,-113.15351],
+[41.60812,-113.12878],
+[41.60731,-113.12847],
+[41.59798,-113.12373],
+[41.58369,-113.12048],
+[41.5782,-113.11804],
+[41.57124,-113.11656],
+[41.57036,-113.11658],
+[41.56542,-113.11758],
+[41.55991,-113.11988],
+[41.55954,-113.11992],
+[41.55912,-113.11973],
+[41.54183,-113.1075],
+[41.52203,-113.09306],
+[41.52168,-113.09294],
+[41.51102,-113.09263],
+[41.51052,-113.09252],
+[41.49289,-113.08525],
+[41.4924,-113.08491],
+[41.48833,-113.08108],
+[41.48548,-113.07827],
+[41.48003,-113.07311],
+[41.47964,-113.0729],
+[41.46652,-113.06827],
+[41.46595,-113.06799],
+[41.4534,-113.05841],
+[41.44827,-113.05584],
+[41.44762,-113.05566],
+[41.43919,-113.05531],
+[41.43871,-113.05514],
+[41.42342,-113.04625],
+[41.42102,-113.04623],
+[41.42068,-113.04612],
+[41.41032,-113.03952],
+[41.40837,-113.03796],
+[41.40725,-113.03689],
+[41.40518,-113.03469],
+[41.40434,-113.03398],
+[41.4027,-113.03294],
+[41.40105,-113.03203],
+[41.40031,-113.03186],
+[41.3988,-113.03086],
+[41.39656,-113.02954],
+[41.39472,-113.02804],
+[41.39411,-113.02772],
+[41.39369,-113.02732],
+[41.39304,-113.02637],
+[41.39151,-113.02497],
+[41.39083,-113.02372],
+[41.39061,-113.02265],
+[41.39048,-113.02237],
+[41.38952,-113.02137],
+[41.38896,-113.02099],
+[41.38869,-113.02062],
+[41.3862,-113.01912],
+[41.38482,-113.01867],
+[41.38168,-113.01727],
+[41.3803,-113.01689],
+[41.37769,-113.01598],
+[41.37718,-113.016],
+[41.37596,-113.01573],
+[41.37493,-113.01568],
+[41.37419,-113.01547],
+[41.37184,-113.01517],
+[41.371,-113.01524],
+[41.36861,-113.01471],
+[41.3671,-113.01462],
+[41.36495,-113.01396],
+[41.36389,-113.01323],
+[41.36295,-113.01282],
+[41.36228,-113.01268],
+[41.35862,-113.01255],
+[41.35644,-113.01136],
+[41.35583,-113.01094],
+[41.35399,-113.01045],
+[41.35049,-113.00992],
+[41.34734,-113.01052],
+[41.34662,-113.01047],
+[41.34629,-113.01034],
+[41.34613,-113.01038],
+[41.34582,-113.01078],
+[41.34531,-113.01081],
+[41.34405,-113.01053],
+[41.34141,-113.00946],
+[41.33993,-113.00907],
+[41.33786,-113.00796],
+[41.33776,-113.00777],
+[41.33779,-113.00724],
+[41.33762,-113.00585],
+[41.33761,-113.00509],
+[41.33739,-113.00441],
+[41.33657,-113.00053],
+[41.3317,-112.97654],
+[41.33138,-112.97545],
+[41.3313,-112.97461],
+[41.33109,-112.97352],
+[41.33095,-112.97321],
+[41.33052,-112.97269],
+[41.30953,-112.95981],
+[41.30777,-112.95836],
+[41.29452,-112.94128],
+[41.29368,-112.93986],
+[41.28004,-112.9045],
+[41.27959,-112.9039],
+[41.26271,-112.89101],
+[41.26253,-112.8907],
+[41.26194,-112.89053],
+[41.26138,-112.88998],
+[41.25619,-112.88603],
+[41.25314,-112.88636],
+[41.25269,-112.88668],
+[41.25235,-112.88666],
+[41.25192,-112.88629],
+[41.25158,-112.88569],
+[41.2513,-112.88556],
+[41.25023,-112.88586],
+[41.24896,-112.88732],
+[41.24823,-112.88872],
+[41.24809,-112.88916],
+[41.24678,-112.89099],
+[41.24588,-112.89164],
+[41.24485,-112.89185],
+[41.22999,-112.88825],
+[41.2252,-112.88627],
+[41.22396,-112.87756],
+[41.22549,-112.87719],
+[41.20053,-112.79526],
+[41.13553,-112.7445],
+[41.03058,-112.73503],
+[40.91406,-112.73189],
+[40.91427,-112.73189],
+[40.91428,-112.7342],
+[40.91343,-112.73415],
+[40.91281,-112.73399],
+[40.91197,-112.73341],
+[40.91115,-112.73319],
+[40.75876,-112.73336],
+[40.75784,-112.73329],
+[40.75676,-112.73289],
+[40.75609,-112.73241],
+[40.75538,-112.73166],
+[40.75469,-112.73053],
+[40.75536,-112.73001],
+[40.75469,-112.73053],
+[40.75434,-112.72961],
+[40.75409,-112.72841],
+[40.75283,-112.71531],
+[40.74697,-112.65723],
+[40.74686,-112.65579],
+[40.74685,-112.65301],
+[40.74679,-112.6523],
+[40.74383,-112.62121],
+[40.72236,-112.53882],
+[40.67248,-112.36969],
+[40.71491,-112.24304],
+[40.72422,-112.22656],
+[40.72412,-112.22651],
+[40.72488,-112.22409],
+[40.7253,-112.22217],
+[40.72546,-112.22058],
+[40.72578,-112.2202],
+[40.72715,-112.21646],
+[40.72799,-112.21494],
+[40.7303,-112.20923],
+[40.73143,-112.20686],
+[40.73258,-112.20458],
+[40.73278,-112.20432],
+[40.73333,-112.20307],
+[40.73455,-112.20145],
+[40.73483,-112.20096],
+[40.73544,-112.19898],
+[40.73745,-112.19505],
+[40.74037,-112.19045],
+[40.74073,-112.19005],
+[40.74307,-112.18838],
+[40.74623,-112.18656],
+[40.74706,-112.18576],
+[40.74368,-112.18089],
+[40.7329,-112.16886],
+[40.73244,-112.1686],
+[40.7319,-112.16847],
+[40.73114,-112.16858],
+[40.73043,-112.16902],
+[40.72932,-112.17038],
+[40.72868,-112.17075],
+[40.72794,-112.17092],
+[40.72774,-112.16818],
+[40.7276,-112.16714],
+[40.72721,-112.16559],
+[40.72673,-112.16437],
+[40.72596,-112.16266],
+[40.7253,-112.16148],
+[40.72429,-112.16008],
+[40.72277,-112.15839],
+[40.72223,-112.15757],
+[40.72191,-112.15688],
+[40.72162,-112.15588],
+[40.72129,-112.15307],
+[40.72105,-112.15186],
+[40.7207,-112.15085],
+[40.71961,-112.14839],
+[40.71923,-112.14714],
+[40.71912,-112.1457],
+[40.71932,-112.14317],
+[40.7192,-112.14185],
+[40.71894,-112.14089],
+[40.71785,-112.13805],
+[40.71699,-112.13471],
+[40.7159,-112.12816],
+[40.7159,-112.12642],
+[40.71614,-112.12463],
+[40.71647,-112.12287],
+[40.7174,-112.11921],
+[40.71774,-112.11751],
+[40.71801,-112.11535],
+[40.71808,-112.11397],
+[40.71806,-112.10003],
+[40.71779,-112.09659],
+[40.71742,-112.09419],
+[40.71727,-112.09235],
+[40.71714,-112.09197],
+[40.71696,-112.09185],
+[40.71122,-112.09188],
+[40.71122,-112.09057],
+[40.7084,-112.0823],
+[40.70906,-112.08228],
+[40.70913,-112.07796],
+[40.70921,-112.07275],
+[40.70918,-112.07066],
+[40.70861,-112.05997],
+[40.70867,-112.05643],
+[40.70886,-112.05349],
+[40.70938,-112.04823],
+[40.70965,-112.04398],
+[40.7105,-112.03525],
+[40.71095,-112.03273],
+[40.71119,-112.02225],
+[40.71128,-112.02227],
+[40.71147,-112.02183],
+[40.71176,-112.02163],
+[40.71213,-112.02117],
+[40.71238,-112.02063],
+[40.71253,-112.02002],
+[40.71272,-112.01969],
+[40.71272,-112.01939],
+[40.71261,-112.01929],
+[40.71251,-112.01892],
+[40.71252,-112.0149],
+[40.7127,-112.01352],
+[40.71245,-112.01295],
+[40.71253,-112.01238],
+[40.71253,-112.01031],
+[40.71267,-112.0093],
+[40.7128,-112.00918],
+[40.71272,-112.00899],
+[40.71276,-112.00874],
+[40.71246,-112.00847],
+[40.71251,-112.00765],
+[40.71226,-112.00632],
+[40.71216,-112.00509],
+[40.71247,-112.00169],
+[40.71238,-112.00166],
+[40.71236,-112.00075],
+[40.71217,-111.99965],
+[40.71106,-111.99627],
+[40.71087,-111.99501],
+[40.71091,-111.994],
+[40.71141,-111.99036],
+[40.71184,-111.98941],
+[40.71249,-111.98878],
+[40.71215,-111.98769],
+[40.71203,-111.98694],
+[40.71128,-111.97899],
+[40.71133,-111.97881],
+[40.71118,-111.97716],
+[40.7112,-111.97217],
+[40.71132,-111.97156],
+[40.71188,-111.96999],
+[40.71193,-111.96701],
+[40.71222,-111.96577],
+[40.71224,-111.94967],
+[40.71234,-111.94835],
+[40.71267,-111.94727],
+[40.71338,-111.94609],
+[40.71415,-111.94531],
+[40.71566,-111.9443],
+[40.71611,-111.94378],
+[40.71656,-111.94298],
+[40.71682,-111.94222],
+[40.71699,-111.94115],
+[40.71699,-111.93404],
+[40.71763,-111.93396],
+[40.71765,-111.93208],
+[40.71772,-111.93208],
+[40.71771,-111.93197],
+[40.7182,-111.9319],
+[40.71874,-111.93169],
+[40.71871,-111.93108],
+[40.71878,-111.93089],
+[40.71893,-111.93078],
+[40.72072,-111.93078],
+[40.72074,-111.92839],
+[40.72082,-111.9284],
+[40.72083,-111.92373],
+[40.72178,-111.92373],
+[40.72225,-111.92387],
+[40.72296,-111.92343],
+[40.72326,-111.92351],
+[40.72376,-111.92221],
+[40.72391,-111.92151],
+[40.72392,-111.92083],
+[40.72357,-111.91769],
+[40.72369,-111.91756],
+[40.72473,-111.91723],
+[40.72484,-111.91729],
+[40.72518,-111.91709],
+[40.72548,-111.91707],
+[40.72545,-111.91665],
+[40.72559,-111.91651],
+[40.72551,-111.91535],
+[40.72556,-111.91513],
+[40.72557,-111.90757],
+[40.72541,-111.902],
+[40.72549,-111.89673],
+[40.72543,-111.89615],
+[40.72546,-111.88816],
+[40.73353,-111.88814],
+[40.73364,-111.88815],
+[40.73365,-111.88832],
+[40.77049,-111.88834],
+[40.77556,-111.88822],
+[40.77574,-111.88818],
+[40.77579,-111.88794],
+[40.77604,-111.88795],
+[40.77619,-111.8881],
+[40.77675,-111.8881]
+];
+
+// ── Map init ──────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [41.177, -112.520],
+  zoom: 9,
+  zoomControl: true,
+  scrollWheelZoom: false
+});
+map.scrollWheelZoom.disable(); // page scroll drives the story, not the map zoom
+
+// Subtle dark basemap
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+// Route polyline
+const routeLine = L.polyline(routeCoords, {
+  color: '#7EC8C8',
+  weight: 3,
+  opacity: 0.85,
+  lineJoin: 'round'
+}).addTo(map);
+
+// Start/finish marker
+const startIcon = L.divIcon({
+  className: '',
+  html: `<div style="
+    background:#F2EFE6;
+    border:3px solid #7EC8C8;
+    border-radius:50%;
+    width:16px;height:16px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;font-weight:bold;color:#2C3E4A;
+  ">S</div>`,
+  iconSize: [16, 16],
+  iconAnchor: [8, 8]
+});
+L.marker([40.7768, -111.8881], { icon: startIcon })
+  .bindTooltip('Start / Finish, Salt Lake City')
+  .addTo(map);
+
+// ── Story markers ────────────────────────────────────────────────────────
+const markerById = {};
+
+// Narrative order, following the route mile by mile (see mile numbers in each label)
+const allStops = [
+  stories.find(s => s.id === "bear-river"),
+  stories.find(s => s.id === "gunnison-island")
+];
+
+function makeMarkerIcon(stop, number) {
+  return L.divIcon({
+    className: '',
+    html: `<div class="story-marker ${stop.type}" data-id="${stop.id}">
+             <div class="marker-icon-inner">${number}</div>
+           </div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -32]
+  });
+}
+
+allStops.forEach((stop, i) => {
+  const marker = L.marker([stop.lat, stop.lon], { icon: makeMarkerIcon(stop, i + 1) }).addTo(map);
+  markerById[stop.id] = marker;
+  marker.on('click', () => {
+    const section = document.querySelector(`.scrolly-section[data-id="${stop.id}"]`);
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+});
+
+// ── Build the scrolling narrative from the same story/camp data ────────────
+const storyPane = document.getElementById('story-pane');
+const progressDots = document.getElementById('progress-dots');
+
+allStops.forEach(stop => {
+  const section = document.createElement('section');
+  section.className = 'scrolly-section';
+  section.dataset.id = stop.id;
+
+  let html = '';
+  if (stop.heroImage) {
+    html += `<div class="section-hero"><img src="${stop.heroImage}" alt="${stop.title}" loading="lazy">`;
+    if (stop.heroCredit) html += `<span class="hero-credit">${stop.heroCredit}</span>`;
+    html += `</div>`;
+  }
+  html += `<div class="kicker">${stop.label}</div><h2>${stop.title}</h2>`;
+  stop.sections.forEach(sec => {
+    html += `<div class="story-section ${sec.kind}"><h3>${sec.heading}</h3><p>${sec.html}</p></div>`;
+  });
+  if (stop.googleMapsUrl && !stop.googleMapsUrl.includes('example')) {
+    html += `<a href="${stop.googleMapsUrl}" target="_blank" class="map-link">View on Google Maps →</a>`;
+  }
+  section.innerHTML = html;
+  storyPane.appendChild(section);
+
+  const dot = document.createElement('div');
+  dot.className = 'progress-dot';
+  dot.title = stop.title;
+  dot.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+  progressDots.appendChild(dot);
+});
+
+const sectionEls = Array.from(document.querySelectorAll('.scrolly-section'));
+const dotEls = Array.from(progressDots.children);
+
+// ── Scrollytelling: map follows the section currently in view ──────────────
+let activeMarkerEl = null;
+const timelapse = document.getElementById('timelapse');
+
+function focusStop(stopId) {
+  timelapse.classList.add('hidden');
+
+  sectionEls.forEach(el => el.classList.toggle('active', el.dataset.id === stopId));
+  dotEls.forEach((d, i) => d.classList.toggle('active', allStops[i].id === stopId));
+
+  if (activeMarkerEl) activeMarkerEl.classList.remove('active');
+
+  const stop = allStops.find(s => s.id === stopId);
+  if (!stop) return;
+  const marker = markerById[stop.id];
+  const el = marker && marker.getElement() && marker.getElement().querySelector('.story-marker');
+  if (el) { el.classList.add('active'); activeMarkerEl = el; }
+  map.flyTo([stop.lat, stop.lon], 12.4, { duration: 1.1 });
+}
+
+function resetMapView() {
+  timelapse.classList.remove('hidden');
+
+  sectionEls.forEach(el => el.classList.remove('active'));
+  dotEls.forEach(d => d.classList.remove('active'));
+  if (activeMarkerEl) { activeMarkerEl.classList.remove('active'); activeMarkerEl = null; }
+  map.flyToBounds(routeLine.getBounds(), { padding: [30, 30], duration: 1.1 });
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const id = entry.target.dataset.id;
+    if (id === 'intro') resetMapView();
+    else focusStop(id);
+  });
+}, { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+sectionEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
