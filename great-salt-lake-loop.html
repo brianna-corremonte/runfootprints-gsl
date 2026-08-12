@@ -171,6 +171,8 @@
       margin-bottom: 22px;
     }
     #intro-section .stat-row { display: flex; gap: 28px; margin-bottom: 8px; }
+    #intro-section .cite { color: #8A98A2; }
+    #intro-section .cite a { color: #8A98A2; }
     .stat .num {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 1.6rem;
@@ -332,6 +334,25 @@
     }
     .cite a { color: var(--muted); text-decoration: underline; }
 
+    .org-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .org-badge img {
+      height: 22px;
+      width: auto;
+    }
+    .org-badge a {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--brine);
+      text-decoration: none;
+    }
+    .org-badge a:hover { text-decoration: underline; }
+
     .map-link {
       display: inline-flex;
       align-items: center;
@@ -487,17 +508,18 @@
     <section class="scrolly-section" id="intro-section" data-id="intro">
       <div class="kicker">Footprints · Great Salt Lake</div>
       <h2>The Great Salt Lake is disappearing beneath our feet.</h2>
-      <p>This route traces the full loop of the lake, once the largest saltwater lake in the western hemisphere, over 256 miles and 5 days. Scroll down to move along the route and read the climate stories at each stop. The map follows along as you go.</p>
+      <p>We're running the full 256-mile perimeter of the lake over 5 days to raise awareness while there's still time to act. Along the way, this map stops at the places with real stories to tell, and the organizations already doing the work. Scroll down to follow the route and see what's at stake at each one.</p>
       <div class="stat-row">
         <div class="stat">
-          <div class="num">73%</div>
-          <div class="label">of lake area lost</div>
+          <div class="num">64%</div>
+          <div class="label">decline in the lake's water volume since its 1980s peak</div>
         </div>
         <div class="stat">
-          <div class="num">11 ft</div>
-          <div class="label">drop in water level since 1847</div>
+          <div class="num">1,300+ sq mi</div>
+          <div class="label">of lakebed exposed since 1986, an area bigger than Rhode Island</div>
         </div>
       </div>
+      <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 7, 14. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a> &middot; USGS, "Great Salt Lake 1986 and 2022," Utah Water Science Center. <a href="https://www.usgs.gov/media/before-after/great-salt-lake-1986-and-2022" target="_blank">Source</a></span>
       <div class="scroll-cue"><span>Scroll to begin</span><span class="arrow">↓</span></div>
     </section>
     <!-- Story + camp sections are injected here by JS, in route-mile order -->
@@ -559,13 +581,15 @@ const stories = [
       {
         kind: "solution",
         heading: "What Can Be Done",
-        html: `The only real fix is water. Lake levels need to stay high enough that Gunnison Island and the lake's other key islands stay surrounded by water instead of connected by dry lakebed. The island has also been designated a state Wildlife Management Area with human access banned outright, which helps, but that rule alone can't stop a coyote from walking across a land bridge.<br><br>The causeway in front of you is where that tradeoff plays out. A 2016 breach and an adjustable berm right at this spot control how much water reaches the North Arm, the side Gunnison Island sits in. In 2025, a bill would have let the state keep that berm closed for 18 months at a stretch, up from 9, and dropped the requirement to ever reopen it: effectively cutting the lake in half. Public pressure got the bill amended, and the North Arm's flow held, for now.
+        html: `The only real fix is water. Lake levels need to stay high enough that Gunnison Island and the lake's other key islands stay surrounded by water instead of connected by dry lakebed. The island has also been designated a state Wildlife Management Area with human access banned outright, which helps, but that rule alone can't stop a coyote from walking across a land bridge.<br><br>The causeway in front of you is where that tradeoff plays out. Utah controls flow into the North Arm, the side Gunnison Island sits in, through an adjustable berm right at this spot, closing it when South Arm salinity climbs too high. State law required that berm to reopen within 18 months of any closure, but a 2025 bill would have quietly dropped that requirement and let the state keep the North Arm cut off indefinitely. Public pressure got the bill amended at the last minute, and the requirement held, for now. Watch Utah Rivers Council's <a href="https://www.youtube.com/shorts/Xhdvaq3dXeo" target="_blank">explainer on the bill</a> for more.
         <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 65&ndash;66. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a></span>`
       },
       {
         kind: "who",
         heading: "Who's Working on It",
-        html: `<a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">Great Salt Lake Waterkeeper</a>, a program of the Utah Rivers Council, tracks the bird species harmed by the lake's decline and pushes to hold the legislature accountable on causeway and water-level policy. Their <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">migratory birds map</a> has more on species-by-species impacts.
+        html: `<div class="org-badge"><img src="https://images.squarespace-cdn.com/content/v1/5a46b200bff2007bcca6fcf4/1c82cac4-0f1a-4969-b156-5287f501f136/URClogo-NO-whitespace.png" alt="Utah Rivers Council logo"><a href="https://utahrivers.org" target="_blank">Utah Rivers Council</a></div>
+        <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">Great Salt Lake Waterkeeper</a>, a Utah Rivers Council program, tracks the bird species harmed by the lake's decline and pushes to hold the legislature accountable on causeway and water-level policy. Their <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">migratory birds map</a> has more on species-by-species impacts.<br><br>The berm fight above is a real win: Waterkeeper's water advocate testified against the 2025 bill, and by October the legislature backed off and restored the 18-month reopening requirement.
+        <span class="cite">Great Salt Lake Waterkeeper, "Your Efforts Helped Save the North Arm of the Great Salt Lake!" (Oct. 17, 2025). <a href="https://www.greatsaltlakewaterkeeper.org/news/north-arm-victory-2025" target="_blank">Read more</a></span><br><br><strong>Take action:</strong> Utah Rivers Council keeps a direct line to state legislators open for fights like this one. <a href="https://utahrivers.org/contact-your-legislators" target="_blank">Contact your legislators</a> and ask them to keep water flowing to the North Arm.
         <span class="cite">Note: the causeway is an active Union Pacific rail line and isn't open to pedestrians. The nearest run-route pit stop is shore access near Lakeside, about 3&ndash;4 miles southwest of the breach shown here.</span>`
       }
     ]
