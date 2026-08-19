@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Running the Shoreline: Great Salt Lake Climate Stories</title>
+  <title>Where the Water Was: Great Salt Lake Climate Stories</title>
 
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -103,6 +103,29 @@
       object-fit: cover;
       display: block;
     }
+    #timelapse-slideshow { position: relative; width: 100%; height: 100%; }
+    .tl-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+    .tl-frame.active { opacity: 1; }
+    #timelapse-year {
+      position: absolute;
+      left: 20px;
+      top: 100px;
+      z-index: 5;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 3.4rem;
+      letter-spacing: 0.02em;
+      color: #FFFFFF;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 22px rgba(0,0,0,0.75), 0 6px 20px rgba(0,0,0,0.55);
+    }
     #timelapse-caption {
       position: absolute;
       left: 16px;
@@ -152,6 +175,14 @@
       color: var(--text);
       line-height: 1.28;
       margin-bottom: 18px;
+    }
+
+    .scrolly-section > p {
+      font-size: 0.94rem;
+      line-height: 1.75;
+      color: var(--text);
+      max-width: 520px;
+      margin-bottom: 16px;
     }
 
     .scrolly-section .story-section:not(:first-of-type) { margin-top: 18px; }
@@ -371,6 +402,126 @@
     }
     .map-link:hover { background: var(--mineral); color: var(--salt); }
 
+    /* ── "Take action now" CTA on the landing page ─────────────── */
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 26px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--slate);
+      background: var(--amber);
+      padding: 12px 20px;
+      border-radius: 2px;
+      text-decoration: none;
+      align-self: flex-start;
+    }
+    .cta-button:hover { background: var(--rust); color: var(--salt); }
+
+    /* ── Interactive map-overview stop list ─────────────────────── */
+    .overview-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      max-width: 480px;
+    }
+    .overview-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(107,122,132,0.08);
+      border: 1px solid rgba(107,122,132,0.2);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .overview-item:hover { background: rgba(126,200,200,0.14); border-color: var(--brine); }
+    .overview-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid var(--salt);
+    }
+    .overview-dot.threat,
+    .overview-dot.refuge,
+    .overview-dot.water  { background: var(--brine); }
+    .overview-item-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .overview-item-title { font-family: 'Georgia', serif; font-size: 0.98rem; color: var(--text); }
+    .overview-arrow { margin-left: auto; color: var(--muted); font-size: 0.9rem; }
+
+    /* ── Per-story action step ───────────────────────────────────── */
+    .action-step {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: rgba(212,135,60,0.1);
+      border: 1px solid rgba(212,135,60,0.35);
+      border-radius: 4px;
+    }
+    .action-step .action-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+    }
+    .action-step p { font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+    .action-step a {
+      display: inline-block;
+      margin-top: 8px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--slate);
+      background: var(--amber);
+      padding: 6px 12px;
+      border-radius: 2px;
+      text-decoration: none;
+    }
+    .action-step a:hover { background: var(--rust); color: var(--salt); }
+
+    /* ── Bottom action summary list ──────────────────────────────── */
+    .action-summary-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+      max-width: 560px;
+    }
+    .action-summary-item {
+      padding: 14px 16px;
+      background: rgba(212,135,60,0.08);
+      border-left: 3px solid var(--amber);
+      border-radius: 2px;
+    }
+    .action-summary-source {
+      display: block;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .action-summary-item p { font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+    .action-summary-item a { color: var(--mineral); font-weight: 600; text-decoration: underline; }
+
     /* ── Legend / Distance ticker ────────────────────────────── */
     #legend {
       position: absolute;
@@ -425,9 +576,9 @@
     .story-marker:hover {
       transform: rotate(-45deg) scale(1.15);
     }
-    .story-marker.threat  { background: var(--rust); }
-    .story-marker.refuge  { background: var(--sage); }
-    .story-marker.water   { background: var(--mineral); }
+    .story-marker.threat,
+    .story-marker.refuge,
+    .story-marker.water   { background: var(--brine); }
     .story-marker.active  { transform: rotate(-45deg) scale(1.2); box-shadow: 0 0 0 3px var(--amber); }
 
     .marker-icon-inner {
@@ -457,6 +608,7 @@
       #intro-section { min-height: 42vh; display: flex; justify-content: center; }
       #intro-section h2 { font-size: 1.5rem; }
       .section-hero { height: 160px; }
+      #timelapse-year { font-size: 2.1rem; left: 14px; top: 70px; }
       #progress-dots { display: none; }
       #legend { padding: 8px 10px; }
       .legend-row { font-size: 0.6rem; }
@@ -467,8 +619,8 @@
 
 <div id="header">
   <div>
-    <div class="sub">Footprints · Great Salt Lake</div>
-    <h1>Running the <em>Shoreline</em></h1>
+    <div class="sub">A Footprints Project</div>
+    <h1>Where the <em>Water Was</em></h1>
   </div>
 </div>
 
@@ -478,10 +630,19 @@
 
     <!-- Satellite timelapse of the lake shrinking, fades away once you scroll into the stories -->
     <div id="timelapse">
-      <video autoplay muted loop playsinline>
-        <source src="https://svs.gsfc.nasa.gov/vis/a010000/a015000/a015020/Salt_Lake_-_Web.mp4" type="video/mp4">
-      </video>
-      <span id="timelapse-caption">Landsat, 1984&ndash;2023. <a href="https://svs.gsfc.nasa.gov/15020/" target="_blank">NASA Scientific Visualization Studio</a></span>
+      <div id="timelapse-slideshow">
+        <img class="tl-frame" data-year="1985" src="timelapse-frames/gsl-1985.jpg" alt="Great Salt Lake, Landsat, 1985">
+        <img class="tl-frame" data-year="1990" src="timelapse-frames/gsl-1990.jpg" alt="Great Salt Lake, Landsat, 1990">
+        <img class="tl-frame" data-year="1995" src="timelapse-frames/gsl-1995.jpg" alt="Great Salt Lake, Landsat, 1995">
+        <img class="tl-frame" data-year="2000" src="timelapse-frames/gsl-2000.jpg" alt="Great Salt Lake, Landsat, 2000">
+        <img class="tl-frame" data-year="2005" src="timelapse-frames/gsl-2005.jpg" alt="Great Salt Lake, Landsat, 2005">
+        <img class="tl-frame" data-year="2010" src="timelapse-frames/gsl-2010.jpg" alt="Great Salt Lake, Landsat, 2010">
+        <img class="tl-frame" data-year="2015" src="timelapse-frames/gsl-2015.jpg" alt="Great Salt Lake, Landsat, 2015">
+        <img class="tl-frame" data-year="2020" src="timelapse-frames/gsl-2020.jpg" alt="Great Salt Lake, Landsat, 2020">
+        <img class="tl-frame" data-year="2023" src="timelapse-frames/gsl-2023.jpg" alt="Great Salt Lake, Landsat, 2023">
+      </div>
+      <div id="timelapse-year"></div>
+      <span id="timelapse-caption">Landsat, 1984&ndash;2023 (latest available). <a href="https://svs.gsfc.nasa.gov/15020/" target="_blank">NASA Scientific Visualization Studio</a></span>
     </div>
 
     <!-- Legend -->
@@ -491,12 +652,8 @@
         <span>Route (~256 mi, 5 days)</span>
       </div>
       <div class="legend-row">
-        <div class="legend-dot" style="background:var(--rust)"></div>
-        <span>Threat / Problem</span>
-      </div>
-      <div class="legend-row">
-        <div class="legend-dot" style="background:var(--sage)"></div>
-        <span>Refuge / Ecosystem</span>
+        <div class="legend-dot" style="background:var(--brine)"></div>
+        <span>Story Stop</span>
       </div>
     </div>
 
@@ -506,7 +663,7 @@
 
   <div id="story-pane">
     <section class="scrolly-section" id="intro-section" data-id="intro">
-      <div class="kicker">Footprints · Great Salt Lake</div>
+      <div class="kicker">Where the Water Was</div>
       <h2>The Great Salt Lake is disappearing beneath our feet.</h2>
       <p>We're running the full 256-mile perimeter of the lake over 5 days to raise awareness while there's still time to act. Along the way, this map stops at the places with real stories to tell, and the organizations already doing the work. Scroll down to follow the route and see what's at stake at each one.</p>
       <div class="stat-row">
@@ -520,8 +677,26 @@
         </div>
       </div>
       <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 7, 14. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a> &middot; USGS, "Great Salt Lake 1986 and 2022," Utah Water Science Center. <a href="https://www.usgs.gov/media/before-after/great-salt-lake-1986-and-2022" target="_blank">Source</a></span>
+      <a href="#action-summary-section" class="cta-button">Take Action Now →</a>
       <div class="scroll-cue"><span>Scroll to begin</span><span class="arrow">↓</span></div>
     </section>
+
+    <section class="scrolly-section" id="about-section" data-id="about">
+      <div class="kicker">About This Run</div>
+      <h2>Why we're running the Great Salt Lake</h2>
+      <p>Dakota Jones is a professional ultrarunner and co-founder of <a href="https://runfootprints.org" target="_blank">Footprints</a>, a nonprofit that helps runners turn their platforms into community climate action. This October, he's leading a group run with local changemakers around the entire Great Salt Lake, 256 miles over 5 days, starting and finishing at the Utah State Capitol.</p>
+      <p>The lake is shrinking because of climate change and decades of water policy that send more of its tributaries to farms, lawns, and cities than it can spare. As the lakebed dries out, wind lifts arsenic and other heavy metals off the exposed ground and carries them toward the same communities along the Wasatch Front, landing hardest on neighborhoods with the fewest resources to cope with it. The lake also anchors a <strong>$1.3 billion</strong> regional economy: it's critical habitat for millions of migrating birds, it feeds a brine shrimp industry sold worldwide, and its lake-effect snow adds 5&ndash;10% of Utah's snowpack, stretching the ski season by 5&ndash;7 weeks and supporting 20,000 jobs.
+      <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 2, 18. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a> &middot; Great Salt Lake Commissioner's Office, "Industry and Recreation." <a href="https://greatsaltlake.utah.gov/industry-recreation/" target="_blank">Source</a></span></p>
+      <p>None of this is starting from zero. Utah has already made real progress on the lake. Local organizations will be joining Dakota around this route to share their stories. There's still work to be done, and this map exists to show exactly where and what you can do about it.</p>
+    </section>
+
+    <section class="scrolly-section" id="map-overview-section" data-id="map-overview">
+      <div class="kicker">Explore the Route</div>
+      <h2>Pick a stop, or just keep scrolling</h2>
+      <p>Every pin on the map marks a real place along the route with a real story: what's at risk there, what's being done about it, and how to help. Click one to jump straight there, or keep scrolling and we'll take you through them in order, mile by mile.</p>
+      <div class="overview-list" id="overview-list"><!-- populated by JS --></div>
+    </section>
+
     <!-- Story + camp sections are injected here by JS, in route-mile order -->
   </div>
 </div>
@@ -555,7 +730,12 @@ const stories = [
         heading: "Who's Working on It",
         html: `Utah state senator <a href="https://senate.utah.gov/sen/BLOUIN/" target="_blank">Nate Blouin</a> introduced legislation in the 2026 session to fight Bear River Development, working from a bill drafted by <a href="https://utahyes.org/" target="_blank">UYES</a>. <a href="https://www.ducks.org/newsroom/ducks-unlimited-joins-utah-partners-in-signing-historic-great-salt-lake-charter-2034" target="_blank">Ducks Unlimited has committed $100 million</a> to the lake, much of it aimed at protecting bird habitat in this stretch specifically.`
       }
-    ]
+    ],
+    action: {
+      text: "Utah Youth Environmental Solutions drafted the bill fighting Bear River Development and organizes public pressure on the legislature every session.",
+      cta: "Get involved with UYES",
+      url: "https://utahyes.org/action/"
+    }
   },
   {
     id: "gunnison-island",
@@ -589,10 +769,15 @@ const stories = [
         heading: "Who's Working on It",
         html: `<div class="org-badge"><img src="https://images.squarespace-cdn.com/content/v1/5a46b200bff2007bcca6fcf4/1c82cac4-0f1a-4969-b156-5287f501f136/URClogo-NO-whitespace.png" alt="Utah Rivers Council logo"><a href="https://utahrivers.org" target="_blank">Utah Rivers Council</a></div>
         <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">Great Salt Lake Waterkeeper</a>, a Utah Rivers Council program, tracks the bird species harmed by the lake's decline and pushes to hold the legislature accountable on causeway and water-level policy. Their <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">migratory birds map</a> has more on species-by-species impacts.<br><br>The berm fight above is a real win: Waterkeeper's water advocate testified against the 2025 bill, and by October the legislature backed off and restored the 18-month reopening requirement.
-        <span class="cite">Great Salt Lake Waterkeeper, "Your Efforts Helped Save the North Arm of the Great Salt Lake!" (Oct. 17, 2025). <a href="https://www.greatsaltlakewaterkeeper.org/news/north-arm-victory-2025" target="_blank">Read more</a></span><br><br><strong>Take action:</strong> Utah Rivers Council keeps a direct line to state legislators open for fights like this one. <a href="https://utahrivers.org/contact-your-legislators" target="_blank">Contact your legislators</a> and ask them to keep water flowing to the North Arm.
+        <span class="cite">Great Salt Lake Waterkeeper, "Your Efforts Helped Save the North Arm of the Great Salt Lake!" (Oct. 17, 2025). <a href="https://www.greatsaltlakewaterkeeper.org/news/north-arm-victory-2025" target="_blank">Read more</a></span>
         <span class="cite">Note: the causeway is an active Union Pacific rail line and isn't open to pedestrians. The nearest run-route pit stop is shore access near Lakeside, about 3&ndash;4 miles southwest of the breach shown here.</span>`
       }
-    ]
+    ],
+    action: {
+      text: "Utah Rivers Council keeps a direct line to state legislators open for fights like the North Arm berm bill.",
+      cta: "Contact your legislators",
+      url: "https://utahrivers.org/contact-your-legislators"
+    }
   }
 ];
 
@@ -1644,13 +1829,15 @@ function makeMarkerIcon(stop, number) {
   });
 }
 
+function scrollToStop(id) {
+  const section = document.querySelector(`.scrolly-section[data-id="${id}"]`);
+  if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 allStops.forEach((stop, i) => {
   const marker = L.marker([stop.lat, stop.lon], { icon: makeMarkerIcon(stop, i + 1) }).addTo(map);
   markerById[stop.id] = marker;
-  marker.on('click', () => {
-    const section = document.querySelector(`.scrolly-section[data-id="${stop.id}"]`);
-    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  });
+  marker.on('click', () => scrollToStop(stop.id));
 });
 
 // ── Build the scrolling narrative from the same story/camp data ────────────
@@ -1672,6 +1859,9 @@ allStops.forEach(stop => {
   stop.sections.forEach(sec => {
     html += `<div class="story-section ${sec.kind}"><h3>${sec.heading}</h3><p>${sec.html}</p></div>`;
   });
+  if (stop.action) {
+    html += `<div class="action-step"><div class="action-label">Take Action</div><p>${stop.action.text}</p><a href="${stop.action.url}" target="_blank">${stop.action.cta} →</a></div>`;
+  }
   if (stop.googleMapsUrl && !stop.googleMapsUrl.includes('example')) {
     html += `<a href="${stop.googleMapsUrl}" target="_blank" class="map-link">View on Google Maps →</a>`;
   }
@@ -1681,16 +1871,59 @@ allStops.forEach(stop => {
   const dot = document.createElement('div');
   dot.className = 'progress-dot';
   dot.title = stop.title;
-  dot.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+  dot.addEventListener('click', () => scrollToStop(stop.id));
   progressDots.appendChild(dot);
 });
 
+// ── Interactive map-overview list: click a stop to jump straight there ─────
+const overviewList = document.getElementById('overview-list');
+allStops.forEach(stop => {
+  const item = document.createElement('div');
+  item.className = 'overview-item';
+  item.innerHTML = `<span class="overview-dot ${stop.type}"></span>
+    <div><div class="overview-item-label">${stop.label}</div><div class="overview-item-title">${stop.title}</div></div>
+    <span class="overview-arrow">→</span>`;
+  item.addEventListener('click', () => scrollToStop(stop.id));
+  overviewList.appendChild(item);
+});
+
+// ── Bottom action summary: every story's action step, gathered in one place ─
+const actionSection = document.createElement('section');
+actionSection.className = 'scrolly-section';
+actionSection.id = 'action-summary-section';
+actionSection.dataset.id = 'action-summary';
+let actionHtml = `<div class="kicker">Take Action</div><h2>Every action from this map, in one place</h2><p>Circling the lake for 5 days draws attention. These are the concrete next steps that actually move water back into it.</p><ul class="action-summary-list">`;
+allStops.forEach(stop => {
+  if (!stop.action) return;
+  actionHtml += `<li class="action-summary-item"><span class="action-summary-source">${stop.label}</span><p>${stop.action.text} <a href="${stop.action.url}" target="_blank">${stop.action.cta} →</a></p></li>`;
+});
+actionHtml += `</ul>`;
+actionSection.innerHTML = actionHtml;
+storyPane.appendChild(actionSection);
+
 const sectionEls = Array.from(document.querySelectorAll('.scrolly-section'));
 const dotEls = Array.from(progressDots.children);
+const overviewIds = new Set(['intro', 'about', 'map-overview', 'action-summary']);
 
 // ── Scrollytelling: map follows the section currently in view ──────────────
 let activeMarkerEl = null;
 const timelapse = document.getElementById('timelapse');
+
+// ── Satellite timelapse: step through Landsat years every few seconds ──────
+const tlFrames = Array.from(document.querySelectorAll('.tl-frame'));
+const tlYearLabel = document.getElementById('timelapse-year');
+let tlIndex = 0;
+function showTlFrame(i) {
+  tlFrames.forEach((f, idx) => f.classList.toggle('active', idx === i));
+  tlYearLabel.textContent = tlFrames[i].dataset.year;
+}
+if (tlFrames.length) {
+  showTlFrame(0);
+  setInterval(() => {
+    tlIndex = (tlIndex + 1) % tlFrames.length;
+    showTlFrame(tlIndex);
+  }, 2600);
+}
 
 function focusStop(stopId) {
   timelapse.classList.add('hidden');
@@ -1708,8 +1941,8 @@ function focusStop(stopId) {
   map.flyTo([stop.lat, stop.lon], 12.4, { duration: 1.1 });
 }
 
-function resetMapView() {
-  timelapse.classList.remove('hidden');
+function resetMapView(withTimelapse = true) {
+  timelapse.classList.toggle('hidden', !withTimelapse);
 
   sectionEls.forEach(el => el.classList.remove('active'));
   dotEls.forEach(d => d.classList.remove('active'));
@@ -1721,7 +1954,8 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
     const id = entry.target.dataset.id;
-    if (id === 'intro') resetMapView();
+    if (id === 'intro' || id === 'about') resetMapView(true);
+    else if (overviewIds.has(id)) resetMapView(false);
     else focusStop(id);
   });
 }, { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 });
