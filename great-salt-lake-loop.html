@@ -451,7 +451,13 @@
     }
     .overview-dot.threat,
     .overview-dot.refuge,
-    .overview-dot.water  { background: var(--brine); }
+    .overview-dot.water,
+    .overview-dot.capitol { background: var(--brine); }
+    .overview-dot.context {
+      background: var(--amber);
+      width: 8px;
+      height: 8px;
+    }
     .overview-item-label {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 0.62rem;
@@ -746,7 +752,7 @@
     <div id="legend">
       <div class="legend-row">
         <div class="legend-line"></div>
-        <span>Route (~256 mi, 5 days)</span>
+        <span>Route</span>
       </div>
       <div class="legend-row">
         <div class="legend-dot" style="background:var(--brine)"></div>
@@ -754,7 +760,7 @@
       </div>
       <div class="legend-row">
         <div class="legend-dot" style="background:var(--amber); width:8px; height:8px;"></div>
-        <span>Quick Fact</span>
+        <span>Deeper Look</span>
       </div>
     </div>
 
@@ -798,6 +804,13 @@
       <div class="overview-list" id="overview-list"><!-- populated by JS --></div>
     </section>
 
+    <section class="scrolly-section" id="context-section" data-id="context">
+      <div class="kicker">The Bigger Picture</div>
+      <h2>Take a deeper look to learn about the lake</h2>
+      <p>These aren't stops on the route, they're context: the watershed, the cities, the farmland, and the industry all tied to the lake's health. Click one to see it highlighted on the map along with the data behind it.</p>
+      <div class="overview-list" id="context-list"><!-- populated by JS --></div>
+    </section>
+
     <!-- Story + camp sections are injected here by JS, in route-mile order -->
   </div>
 </div>
@@ -833,9 +846,9 @@ const stories = [
       }
     ],
     action: {
-      text: "Utah Youth Environmental Solutions drafted the bill fighting Bear River Development and organizes public pressure on decision makers. They're currently running the GSL People's Charter, a campaign calling on candidates and elected officials to make concrete, public commitments to saving the Great Salt Lake. Candidates and elected officials can take the pledge, while Utahns can sign the petition.",
-      cta: "Get involved with UYES",
-      url: "https://utahyes.org/action/"
+      text: "Utah Youth Environmental Solutions drafted the bill fighting Bear River Development and organizes public pressure on decision makers. They've now finished the GSL Charter, a campaign calling on candidates and elected officials to make concrete, public commitments to saving the Great Salt Lake. Candidates and elected officials can take the pledge, while Utahns can sign the petition.",
+      cta: "Sign the GSL Charter",
+      url: "https://gsl2034.com/support-the-charter/"
     }
   },
   {
@@ -881,37 +894,43 @@ const stories = [
     }
   },
   {
-    id: "gilbert-bay-data-center",
-    lat: 40.710, lon: -112.290,
+    id: "stratos-data-center",
+    lat: 41.65, lon: -112.62,
     type: "threat",
-    label: "~Mile 210 · South Shore, Tooele County",
-    title: "A Data Center Wants a Piece of Gilbert Bay",
-    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=40.710,-112.290",
+    label: "~Mile 95 · North Shore, Box Elder County",
+    title: "The Great Salt Lake Cannot Support the Stratos Data Center",
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=41.65,-112.62",
     sections: [
       {
         kind: "threat",
         heading: "The Problem",
-        html: `A proposed 500-megawatt data center, truck stop, and warehouse complex here in Tooele County, backed with incentives from the Utah Inland Port Authority, has applied for a permit to discharge up to 250,000 gallons of concentrated brine wastewater a day into wetlands just 1.6 miles from Gilbert Bay, the lake's main body. At a July 2026 public hearing on that discharge permit, dozens of Utahns raised concerns about PFAS contamination, diesel runoff, and toxic dust, with little environmental review done before the project moved forward.
-        <span class="cite">The Salt Lake Tribune, "Utahns Speak Out as Yet Another Data Center Is Planned Near the Great Salt Lake" (Jul. 28, 2026). <a href="https://www.sltrib.com/news/environment/2026/07/28/yet-another-data-center-planned/" target="_blank">Read the article</a></span>`
+        html: `In early 2026, celebrity investor Kevin O'Leary announced plans for one of the nation's largest data centers on the lake's north side. The scale is staggering: a 40,000-acre footprint, since cut to 20,000, still bigger than Manhattan's 14,600; 9 gigawatts of power, nearly double Utah's entire peak electricity demand; and a water request of 13,000 acre-feet a year that BYU ecologist Ben Abbott says badly undercounts the real need, closer to 100,000 acre-feet. USU physicist Robert Davies models nighttime temperatures nearby rising as much as 12 degrees Fahrenheit. "The thermal energy coming off the Stratos Project," he said, "could be equivalent to the energy of 23 atomic bombs being deposited on that valley every day in the form of waste heat." A project at this scale is incompatible with a livable future for northern Utah, or with any real chance of saving this lake.
+        <span class="cite">KSL, "Kevin O'Leary Agrees to Cut Box Elder County Data Center Project Area in Half." <a href="https://www.ksl.com/article/51506884/kevin-oleary-agrees-to-cut-box-elder-county-data-center-project-area-in-half" target="_blank">Read the article</a> &middot; Utah Clean Energy, "Estimated Emissions and Water Consumption from the Proposed Stratos Data Center" (May 7, 2026). <a href="https://utahcleanenergy.org/estimated-emissions-and-water-consumption-from-the-proposed-stratos-data-center/" target="_blank">Read the analysis</a> &middot; Grow the Flow Utah, "Analysis Finds Box Elder Data Center Could Release as Much Heat as 23 Atomic Bombs Per Day" (May 7, 2026). <a href="https://growtheflowutah.org/2026/05/07/press-release-analysis-finds-box-elder-data-center-could-release-as-much-heat-as-23-atomic-bombs-per-day/" target="_blank">Read the release</a></span>`
       },
       {
         kind: "solution",
-        heading: "What Can Be Done",
-        html: `This isn't an isolated fight. About 100 miles north in Box Elder County, the Stratos Project, a data center campus proposed at up to 9 gigawatts, drew such intense bipartisan backlash that two county commissioners and the state's most powerful legislator, Senate President Stuart Adams, were voted out of office in June 2026. Under that pressure, Governor Cox signed an executive order setting a higher bar and mandatory environmental review for future data center projects, though he hasn't withdrawn support for Stratos itself. Utah Clean Energy's own analysis found that a natural-gas-powered version of Stratos alone could raise the state's total carbon emissions by more than half and consume over 16 billion gallons of water a year, on top of whatever this Tooele County project adds.
-        <span class="cite">The Christian Science Monitor, "Utah Planned the World's Biggest Data Center. Then Came the Bipartisan Pushback." (Sep. 1, 2026). <a href="https://www.csmonitor.com/Environment/2026/0901/utah-data-centers-stratos-project" target="_blank">Read the article</a></span>`
-      },
-      {
-        kind: "who",
-        heading: "Who's Working on It",
-        html: `<a href="https://utahcleanenergy.org" target="_blank">Utah Clean Energy</a> has been publishing independent estimates of these projects' water and emissions impact that state agencies haven't. "We believe Utahns deserve more information and facts about this proposed project to fully understand its impacts on our health, well-being, and resources," said CEO Sara Baldwin-Griffin. <a href="https://utahcleanenergy.org/estimated-emissions-and-water-consumption-from-the-proposed-stratos-data-center/" target="_blank">Read their full analysis</a>.
-        <span class="cite">Utah Clean Energy, "Estimated Emissions and Water Consumption from the Proposed Stratos Data Center" (May 7, 2026).</span>`
+        heading: "Public Pushback, Private Approval",
+        html: `Local residents have pushed back hard. A public hearing in May 2026 drew more than 1,000 people in opposition; the county commissioners refused to hear public comment, retired to a private room, and unanimously approved the project there. Residents tried to file a referendum to let the public vote it down, but were told the approval was administrative, not legislative, and denied. They've appealed in court, and the case is still in progress; if they win, they can collect signatures and put the project to a vote.<br><br>The Stratos Project's approval rests on the Military Installation Development Authority (MIDA), which exists to support industrial development tied to the military. A data center has no affiliation with the military, but MIDA has claimed it can approve the project because it is using military land. MIDA's own description of the project makes clear that the land being used to justify that involvement is more than 60 miles from the actual Stratos site. This run will cross that same 60-plus miles on foot, over five days.
+        <span class="cite">Utah News Dispatch, "Hundreds Cry Out as Box Elder Commissioners Wave in Massive Data Center" (May 4, 2026). <a href="https://utahnewsdispatch.com/2026/05/04/box-elder-commissioners-approve-data-center/" target="_blank">Read the article</a> &middot; The Salt Lake Tribune, "A Fight Over One Word Could Help Decide Whether Box Elder Voters Get a Say" (Sep. 15, 2026). <a href="https://www.sltrib.com/news/2026/09/15/mida-law-key-arguments-against-box/" target="_blank">Read the article</a> &middot; MIDA's own description of the project. <a href="https://drive.google.com/file/d/1LlW83NZlxOu7RU2g-p58Atl2bDZttnE-/view?usp=sharing" target="_blank">View the document</a></span>`
       }
     ],
-    action: {
-      text: "Utah Clean Energy tracks every data center and energy bill moving through the legislature in real time.",
-      cta: "Follow the legislative tracker",
-      url: "https://utahcleanenergy.org/2026-legislative-tracker/"
-    }
+    actions: [
+      {
+        text: "The Box Elder Accountability Referendum (BEAR) is the group of Box Elder County locals fighting to put the project to a public vote.",
+        cta: "Get involved with BEAR",
+        url: "https://www.stopstratos.org/"
+      },
+      {
+        text: "Stewardship Utah is backing BEAR's fight with a broader advocacy reach: educating people, raising money, and organizing resistance.",
+        cta: "Follow Stewardship Utah's work",
+        url: "http://www.stewardshiputah.org/x96"
+      },
+      {
+        text: "Breathe Utah works to protect Utahns' health and has put together a clear explainer on the Stratos Project's risks and how to engage.",
+        cta: "Read Breathe Utah's explainer",
+        url: "https://www.breatheutah.org/news/the-stratos-project-questions-concerns-and-how-to-engage"
+      }
+    ]
   },
   {
     id: "state-capitol",
@@ -1979,8 +1998,8 @@ const markerById = {};
 // Narrative order, following the route mile by mile (see mile numbers in each label)
 const allStops = [
   stories.find(s => s.id === "bear-river"),
+  stories.find(s => s.id === "stratos-data-center"),
   stories.find(s => s.id === "gunnison-island"),
-  stories.find(s => s.id === "gilbert-bay-data-center"),
   stories.find(s => s.id === "state-capitol")
 ];
 
@@ -2179,11 +2198,13 @@ function makePopupDraggable(marker) {
   handle.addEventListener('touchstart', onDown, { passive: false });
 }
 
+const infoMarkerById = {};
 infoPins.forEach(pin => {
   const icon = L.divIcon({ className: '', html: `<div class="info-marker"></div>`, iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [-150, -8] });
   const marker = L.marker([pin.lat, pin.lon], { icon }).addTo(map).bindPopup(
     `<span class="pin-popup-label">${pin.label}</span><span class="pin-popup-text">${pin.html}</span><span class="pin-popup-cite">${pin.cite}</span>`
   );
+  infoMarkerById[pin.id] = marker;
   marker.on('popupopen', () => makePopupDraggable(marker));
 
   if (pin.highlight) {
@@ -2224,9 +2245,9 @@ allStops.forEach(stop => {
   stop.sections.forEach(sec => {
     html += `<div class="story-section ${sec.kind}"><h3>${sec.heading}</h3><p>${sec.html}</p></div>`;
   });
-  if (stop.action) {
-    html += `<div class="action-step"><div class="action-label">Take Action</div><p>${stop.action.text}</p><a href="${stop.action.url}" target="_blank">${stop.action.cta} →</a></div>`;
-  }
+  (stop.actions || (stop.action ? [stop.action] : [])).forEach(action => {
+    html += `<div class="action-step"><div class="action-label">Take Action</div><p>${action.text}</p><a href="${action.url}" target="_blank">${action.cta} →</a></div>`;
+  });
   if (stop.googleMapsUrl && !stop.googleMapsUrl.includes('example')) {
     html += `<a href="${stop.googleMapsUrl}" target="_blank" class="map-link">View on Google Maps →</a>`;
   }
@@ -2252,6 +2273,25 @@ allStops.forEach(stop => {
   overviewList.appendChild(item);
 });
 
+// ── "The Bigger Picture" list: click a context pin to fly there and open it ─
+function focusInfoPin(id) {
+  const pin = infoPins.find(p => p.id === id);
+  const marker = infoMarkerById[id];
+  if (!pin || !marker) return;
+  map.flyTo([pin.lat, pin.lon], Math.max(map.getZoom(), 9), { duration: 0.8 });
+  setTimeout(() => marker.openPopup(), 400);
+}
+const contextList = document.getElementById('context-list');
+infoPins.forEach(pin => {
+  const item = document.createElement('div');
+  item.className = 'overview-item';
+  item.innerHTML = `<span class="overview-dot context"></span>
+    <div><div class="overview-item-label">Deeper Look</div><div class="overview-item-title">${pin.label}</div></div>
+    <span class="overview-arrow">→</span>`;
+  item.addEventListener('click', () => focusInfoPin(pin.id));
+  contextList.appendChild(item);
+});
+
 // ── Bottom action summary: every story's action step, gathered in one place ─
 const actionSection = document.createElement('section');
 actionSection.className = 'scrolly-section';
@@ -2259,8 +2299,9 @@ actionSection.id = 'action-summary-section';
 actionSection.dataset.id = 'action-summary';
 let actionHtml = `<div class="kicker">Take Action</div><h2>Every action from this map, in one place</h2><p>Circling the lake for 5 days draws attention. These are the concrete next steps that actually move water back into it.</p><ul class="action-summary-list">`;
 allStops.forEach(stop => {
-  if (!stop.action) return;
-  actionHtml += `<li class="action-summary-item"><span class="action-summary-source">${stop.label}</span><p>${stop.action.text} <a href="${stop.action.url}" target="_blank">${stop.action.cta} →</a></p></li>`;
+  (stop.actions || (stop.action ? [stop.action] : [])).forEach(action => {
+    actionHtml += `<li class="action-summary-item"><span class="action-summary-source">${stop.label}</span><p>${action.text} <a href="${action.url}" target="_blank">${action.cta} →</a></p></li>`;
+  });
 });
 actionHtml += `</ul>`;
 actionSection.innerHTML = actionHtml;
@@ -2268,7 +2309,7 @@ storyPane.appendChild(actionSection);
 
 const sectionEls = Array.from(document.querySelectorAll('.scrolly-section'));
 const dotEls = Array.from(progressDots.children);
-const overviewIds = new Set(['intro', 'about', 'map-overview', 'action-summary']);
+const overviewIds = new Set(['intro', 'about', 'map-overview', 'context', 'action-summary']);
 
 // ── Scrollytelling: map follows the section currently in view ──────────────
 let activeMarkerEl = null;
