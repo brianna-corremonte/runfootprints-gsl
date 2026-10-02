@@ -72,6 +72,44 @@
       white-space: nowrap;
     }
 
+    #lang-toggle {
+      margin-left: auto;
+      display: flex;
+      gap: 2px;
+      border: 1px solid rgba(126,200,200,0.35);
+      border-radius: 6px;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+
+    .lang-btn {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .lang-btn:hover {
+      color: var(--salt);
+    }
+
+    .lang-btn.active {
+      background: var(--brine);
+      color: var(--slate);
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      #lang-toggle { gap: 1px; }
+      .lang-btn { padding: 4px 7px; font-size: 0.62rem; }
+    }
+
     /* ── Scrollytelling layout: sticky map + scrolling narrative ─ */
     #scrolly {
       display: grid;
@@ -722,8 +760,12 @@
 
 <div id="header">
   <div>
-    <div class="sub">A Footprints Project</div>
-    <h1>Where the <em>Water Was</em></h1>
+    <div class="sub" id="header-sub">A Footprints Project</div>
+    <h1 id="header-title">Where the <em>Water Was</em></h1>
+  </div>
+  <div id="lang-toggle">
+    <button class="lang-btn active" data-lang="en" type="button">English</button>
+    <button class="lang-btn" data-lang="es" type="button">Español</button>
   </div>
 </div>
 
@@ -752,15 +794,15 @@
     <div id="legend">
       <div class="legend-row">
         <div class="legend-line"></div>
-        <span>Route</span>
+        <span id="legend-route">Route</span>
       </div>
       <div class="legend-row">
         <div class="legend-dot" style="background:var(--brine)"></div>
-        <span>Story Stop</span>
+        <span id="legend-story">Story Stop</span>
       </div>
       <div class="legend-row">
         <div class="legend-dot" style="background:var(--amber); width:8px; height:8px;"></div>
-        <span>Deeper Look</span>
+        <span id="legend-deeper">Deeper Look</span>
       </div>
     </div>
 
@@ -770,35 +812,35 @@
 
   <div id="story-pane">
     <section class="scrolly-section" id="intro-section" data-id="intro">
-      <div class="kicker">Where the Water Was</div>
-      <h2>The Great Salt Lake is disappearing beneath our feet.</h2>
-      <p>We're running the full 256-mile perimeter of the lake over 5 days to raise awareness while there's still time to act. Along the way, this map stops at the places with real stories to tell, and the organizations already doing the work. Scroll down to follow the route and see what's at stake at each one.</p>
+      <div class="kicker" id="intro-kicker">Where the Water Was</div>
+      <h2 id="intro-h2">The Great Salt Lake is disappearing beneath our feet.</h2>
+      <p id="intro-p">We're running the full 256-mile perimeter of the lake over 5 days to raise awareness while there's still time to act. Along the way, this map stops at the places with real stories to tell, and the organizations already doing the work. Scroll down to follow the route and see what's at stake at each one.</p>
       <div class="stat-row">
         <div class="stat">
           <div class="num">64%</div>
-          <div class="label">decline in the lake's water volume since its 1980s peak</div>
+          <div class="label" id="intro-stat1-label">decline in the lake's water volume since its 1980s peak</div>
         </div>
         <div class="stat">
           <div class="num">1,300+ sq mi</div>
-          <div class="label">of lakebed exposed since 1986, an area bigger than Rhode Island</div>
+          <div class="label" id="intro-stat2-label">of lakebed exposed since 1986, an area bigger than Rhode Island</div>
         </div>
       </div>
-      <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 7, 14. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a> &middot; USGS, "Great Salt Lake 1986 and 2022," Utah Water Science Center. <a href="https://www.usgs.gov/media/before-after/great-salt-lake-1986-and-2022" target="_blank">Source</a></span>
-      <a href="#action-summary-section" class="cta-button">Take Action Now →</a>
-      <div class="scroll-cue"><span>Scroll to begin</span><span class="arrow">↓</span></div>
+      <span class="cite" id="intro-cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 7, 14. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a> &middot; USGS, "Great Salt Lake 1986 and 2022," Utah Water Science Center. <a href="https://www.usgs.gov/media/before-after/great-salt-lake-1986-and-2022" target="_blank">Source</a></span>
+      <a href="#action-summary-section" class="cta-button" id="intro-cta">Take Action Now →</a>
+      <div class="scroll-cue"><span id="intro-scroll-cue">Scroll to begin</span><span class="arrow">↓</span></div>
     </section>
 
     <section class="scrolly-section" id="map-overview-section" data-id="map-overview">
-      <div class="kicker">Explore the Route</div>
-      <h2>Pick a stop, or just keep scrolling</h2>
-      <p>Every pin on the map marks a real place along the route with a real story: what's at risk there, what's being done about it, and how to help. Click one to jump straight there, or keep scrolling and we'll take you through them in order, mile by mile.</p>
+      <div class="kicker" id="overview-kicker">Explore the Route</div>
+      <h2 id="overview-h2">Pick a stop, or just keep scrolling</h2>
+      <p id="overview-p">Every pin on the map marks a real place along the route with a real story: what's at risk there, what's being done about it, and how to help. Click one to jump straight there, or keep scrolling and we'll take you through them in order, mile by mile.</p>
       <div class="overview-list" id="overview-list"><!-- populated by JS --></div>
     </section>
 
     <section class="scrolly-section" id="context-section" data-id="context">
-      <div class="kicker">The Bigger Picture</div>
-      <h2>Take a deeper look to learn about the lake</h2>
-      <p>These aren't stops on the route, they're context: the watershed, the cities, the farmland, and the industry all tied to the lake's health. Click one to see it highlighted on the map along with the data behind it.</p>
+      <div class="kicker" id="context-kicker">The Bigger Picture</div>
+      <h2 id="context-h2">Take a deeper look to learn about the lake</h2>
+      <p id="context-p">These aren't stops on the route, they're context: the watershed, the cities, the farmland, and the industry all tied to the lake's health. Click one to see it highlighted on the map along with the data behind it.</p>
       <div class="overview-list" id="context-list"><!-- populated by JS --></div>
     </section>
 
@@ -840,6 +882,31 @@ const stories = [
       text: "Utah Youth Environmental Solutions drafted the bill fighting Bear River Development and organizes public pressure on decision makers. They've now finished the GSL Charter, a campaign calling on candidates and elected officials to make concrete, public commitments to saving the Great Salt Lake. Candidates and elected officials can take the pledge, while Utahns can sign the petition.",
       cta: "Sign the GSL Charter",
       url: "https://gsl2034.com/support-the-charter/"
+    },
+    es: {
+      label: "~Milla 62 · Refugio de Aves Migratorias de Bear River",
+      title: "Refugio de Aves Migratorias de Bear River",
+      sections: [
+        {
+          heading: "El Problema",
+          html: `El río Bear aporta más agua al Gran Lago Salado que cualquier otro afluente y abastece directamente a este refugio. Aquí, el agua desviada del río circula por canales artificiales para recrear los humedales que un delta fluvial saludable formaría de manera natural. El refugio alberga aproximadamente el <strong>75% de los cisnes de la tundra en Estados Unidos</strong>, 250.000 avocetas americanas, 65.000 cigüeñuelas cuellinegras y la mayor concentración conocida de chorlitejos nevados, además de millones de otras aves migratorias que pasan por la zona cada año.<br><br>Los distritos de agua de Utah impulsan actualmente el proyecto de desarrollo del río Bear (Bear River Development), un plan de 2.900 millones de dólares para construir tres o cuatro nuevas presas que extraerían agua del río antes de que esta llegue al lago o a este refugio. Los investigadores estiman que esto podría reducir el nivel del Gran Lago Salado entre dos y tres pies adicionales.
+          <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 16&ndash;17 y 23&ndash;24. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Lee el informe</a></span>`
+        },
+        {
+          heading: "¿Qué Se Puede Hacer?",
+          html: `Las ciudades de Utah ya consumen más agua por persona que casi cualquier otro lugar del país, y las normas de conservación del estado se encuentran entre las más laxas del Oeste. Cerrar esa brecha podría liberar más agua de la que jamás lograría una nueva presa, sin necesidad de intervenir el río. El precio del agua secundaria en Utah también es artificialmente bajo, ya que está subvencionado mediante impuestos a la propiedad, lo que elimina cualquier incentivo real para conservarla. Arrendar derechos de agua a lo largo del corredor del río Bear y bloquear nuevas desviaciones protegería el lago y el refugio de forma definitiva, en lugar de gestionar su deterioro sequía tras sequía.<br><br>Un nuevo centro de datos propuesto recientemente para la zona, llamado Stratos, utilizaría agua del río Bear a gran escala para sistemas de refrigeración y ya se enfrenta a un rechazo público organizado.
+          <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 24&ndash;25. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Lee el informe</a> &middot; <a href="https://www.forbes.com/sites/michaelposner/2026/06/09/one-utah-countys-fight-over-a-100-billion-data-center---and-what-it-means-for-all-of-us/" target="_blank">Forbes sobre Stratos</a></span>`
+        },
+        {
+          heading: "Quiénes Trabajan en Ello",
+          html: `El senador estatal de Utah <a href="https://senate.utah.gov/sen/BLOUIN/" target="_blank">Nate Blouin</a> presentó una iniciativa legislativa en la sesión de 2026 para oponerse al proyecto de desarrollo del río Bear, basándose en un proyecto de ley redactado por <a href="https://utahyes.org/" target="_blank">UYES</a>. <a href="https://www.ducks.org/newsroom/ducks-unlimited-joins-utah-partners-in-signing-historic-great-salt-lake-charter-2034" target="_blank">Ducks Unlimited ha destinado 100 millones de dólares</a> al lago, gran parte de esta suma dirigida específicamente a proteger el hábitat de las aves en este tramo.`
+        }
+      ],
+      action: {
+        text: "Utah Youth Environmental Solutions redactó el proyecto de ley para oponerse al desarrollo del río Bear y organiza acciones de presión pública dirigidas a quienes toman las decisiones. Ahora han finalizado la Carta del GSL, una campaña que insta a candidatos y funcionarios electos a asumir compromisos públicos y concretos para salvar el Gran Lago Salado. Los candidatos y funcionarios electos pueden firmar el compromiso, mientras que los habitantes de Utah pueden firmar la petición.",
+        cta: "Firma la Carta del GSL",
+        url: "https://gsl2034.com/support-the-charter/"
+      }
     }
   },
   {
@@ -882,6 +949,39 @@ const stories = [
       text: "Utah Rivers Council keeps a direct line to state legislators open for fights like the North Arm berm bill.",
       cta: "Contact your legislators",
       url: "https://utahrivers.org/contact-your-legislators"
+    },
+    es: {
+      label: "~Milla 167 · El Terraplén Lucin Cutoff",
+      title: "La Isla Gunnison Debe Seguir Siendo una Isla",
+      heroCredit: `U.S. Geological Survey, dominio público. <a href="https://www.usgs.gov/media/images/great-salt-lakes-railroad-causeway" target="_blank">Fuente</a>`,
+      sections: [
+        {
+          heading: "El Problema",
+          html: `Este marcador señala el Lucin Cutoff, el terraplén del ferrocarril Union Pacific que divide el Gran Lago Salado en un brazo norte hipersalino de color rosado y un brazo sur de color azul verdoso, tal como se aprecia en la fotografía aérea superior. La isla Gunnison se encuentra a unas 10 millas al noreste de este punto, en el brazo norte. Por lo general, está aislada de tierra firme, y ese aislamiento es precisamente lo que la convierte en una de las mayores colonias de cría del pelícano blanco americano en Norteamérica, con un histórico de aproximadamente <strong>10.000 nidos</strong>. Cuando el nivel del lago baja, se forma un puente de tierra que permite a los coyotes y otros depredadores llegar a pie hasta la isla y atacar a las crías de pelícano antes de que puedan volar. Un estudio de 2019 contabilizó solo <strong>3.400 nidos</strong>, un desplome de dos tercios.
+          <div class="stat-bar-wrap">
+            <div class="stat-bar-row"><span class="stat-bar-label">~Décadas de 1980 a 2000</span><div class="stat-bar"><div class="stat-bar-fill" style="width:100%">10.000 nidos</div></div></div>
+            <div class="stat-bar-row"><span class="stat-bar-label">Estudio de 2019</span><div class="stat-bar"><div class="stat-bar-fill" style="width:34%;background:var(--rust);">3.400 nidos</div></div></div>
+          </div>
+          <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), p. 19. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Lee el informe</a></span>`
+        },
+        {
+          heading: "Qué Se Puede Hacer",
+          html: `La única solución real es el agua. Los niveles del lago deben mantenerse lo suficientemente altos para que la isla Gunnison y las demás islas clave del lago permanezcan rodeadas de agua, en lugar de quedar conectadas por el lecho seco del lago. La isla también ha sido designada Área Estatal de Gestión de Vida Silvestre, con acceso humano totalmente prohibido, lo cual ayuda, pero esa norma por sí sola no puede impedir que un coyote cruce caminando por un puente de tierra.<br><br>El terraplén frente a ti es donde se juega esa disyuntiva. Utah controla el flujo hacia el Brazo Norte, donde se encuentra la isla Gunnison, mediante un dique ajustable situado justo en este punto, cerrándolo cuando la salinidad del Brazo Sur sube demasiado. La ley estatal exigía que ese dique se reabriera en un plazo de 18 meses tras cualquier cierre, pero un proyecto de ley de 2025 pretendía eliminar discretamente ese requisito y dejar que el estado mantuviera el Brazo Norte cerrado indefinidamente. La presión pública logró modificar el proyecto de ley a última hora, y el requisito se mantuvo, por ahora. Mira el <a href="https://www.youtube.com/shorts/Xhdvaq3dXeo" target="_blank">video explicativo de Utah Rivers Council</a> sobre el proyecto de ley para más información.
+          <span class="cite">The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 65&ndash;66. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Lee el informe</a></span>`
+        },
+        {
+          heading: "Quiénes Trabajan en Ello",
+          html: `<div class="org-badge"><img src="https://images.squarespace-cdn.com/content/v1/5a46b200bff2007bcca6fcf4/1c82cac4-0f1a-4969-b156-5287f501f136/URClogo-NO-whitespace.png" alt="Logo de Utah Rivers Council"><a href="https://utahrivers.org" target="_blank">Utah Rivers Council</a></div>
+          <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">Great Salt Lake Waterkeeper</a>, un programa de Utah Rivers Council, monitorea las especies de aves afectadas por el deterioro del lago y presiona para que la legislatura rinda cuentas sobre las políticas de terraplenes y niveles de agua. Su <a href="https://www.greatsaltlakewaterkeeper.org/great-salt-lake-migratory-birds-interactive-map" target="_blank">mapa de aves migratorias</a> ofrece más detalles sobre el impacto en cada especie.<br><br>La lucha por el dique mencionada arriba representa una victoria real: el defensor del agua de Waterkeeper testificó en contra del proyecto de ley de 2025, y para octubre la legislatura dio marcha atrás y restableció el requisito de reapertura en 18 meses.
+          <span class="cite">Great Salt Lake Waterkeeper, "Your Efforts Helped Save the North Arm of the Great Salt Lake!" (17 de oct. de 2025). <a href="https://www.greatsaltlakewaterkeeper.org/news/north-arm-victory-2025" target="_blank">Lee más</a></span>
+          <span class="cite">Nota: el terraplén es una vía férrea activa de Union Pacific y no está abierta a peatones. La parada de la ruta más cercana es el acceso a la orilla cerca de Lakeside, a unas 3&ndash;4 millas al suroeste de la brecha que se muestra aquí.</span>`
+        }
+      ],
+      action: {
+        text: "Utah Rivers Council mantiene una línea directa con los legisladores estatales para luchas como el proyecto de ley del dique del Brazo Norte.",
+        cta: "Contacta a tus legisladores",
+        url: "https://utahrivers.org/contact-your-legislators"
+      }
     }
   },
   {
@@ -921,7 +1021,40 @@ const stories = [
         cta: "Read Breathe Utah's explainer",
         url: "https://www.breatheutah.org/news/the-stratos-project-questions-concerns-and-how-to-engage"
       }
-    ]
+    ],
+    es: {
+      label: "~Milla 95 · Costa Norte, Condado de Box Elder",
+      title: "El Gran Lago Salado No Puede Sostener el Centro de Datos Stratos",
+      sections: [
+        {
+          heading: "El Problema",
+          html: `A principios de 2026, el inversionista Kevin O'Leary anunció planes para uno de los centros de datos más grandes del país en la costa norte del lago. La magnitud es asombrosa: una superficie de 40.000 acres, luego reducida a 20.000, aun así más grande que los 14.600 acres de Manhattan; 9 gigavatios de potencia, casi el doble de la demanda eléctrica máxima de todo Utah; y una solicitud de agua de 13.000 acres-pie al año que, según el ecólogo de BYU Ben Abbott, subestima gravemente la necesidad real, más cercana a los 100.000 acres-pie. El físico de la USU Robert Davies calcula que las temperaturas nocturnas cercanas podrían subir hasta 12 grados Fahrenheit. "La energía térmica que desprendería el Proyecto Stratos", afirmó, "podría equivaler a la energía de 23 bombas atómicas depositadas en ese valle cada día en forma de calor residual". Un proyecto de esta magnitud es incompatible con un futuro habitable para el norte de Utah, y con cualquier posibilidad real de salvar este lago.
+          <span class="cite">KSL, "Kevin O'Leary Agrees to Cut Box Elder County Data Center Project Area in Half." <a href="https://www.ksl.com/article/51506884/kevin-oleary-agrees-to-cut-box-elder-county-data-center-project-area-in-half" target="_blank">Lee el artículo</a> &middot; Utah Clean Energy, "Estimated Emissions and Water Consumption from the Proposed Stratos Data Center" (7 de mayo de 2026). <a href="https://utahcleanenergy.org/estimated-emissions-and-water-consumption-from-the-proposed-stratos-data-center/" target="_blank">Lee el análisis</a> &middot; Grow the Flow Utah, "Analysis Finds Box Elder Data Center Could Release as Much Heat as 23 Atomic Bombs Per Day" (7 de mayo de 2026). <a href="https://growtheflowutah.org/2026/05/07/press-release-analysis-finds-box-elder-data-center-could-release-as-much-heat-as-23-atomic-bombs-per-day/" target="_blank">Lee el comunicado</a></span>`
+        },
+        {
+          heading: "Rechazo Público, Aprobación Privada",
+          html: `Los residentes locales han expresado un fuerte rechazo. Una audiencia pública en mayo de 2026 convocó a más de 1.000 personas en contra del proyecto; los comisionados del condado se negaron a escuchar los comentarios públicos, se retiraron a una sala privada y aprobaron el proyecto allí por unanimidad. Los residentes intentaron presentar un referéndum para que la ciudadanía pudiera rechazarlo mediante votación, pero se les dijo que la aprobación había sido administrativa, no legislativa, y la solicitud fue denegada. Han apelado en los tribunales y el caso sigue en curso; si ganan, podrán recolectar firmas y someter el proyecto a votación.<br><br>La aprobación del Proyecto Stratos depende de la Autoridad de Desarrollo de Instalaciones Militares (MIDA, por sus siglas en inglés), creada para apoyar el desarrollo industrial vinculado al sector militar. Un centro de datos no tiene ninguna afiliación con el ejército, pero MIDA ha afirmado que puede aprobar el proyecto porque este utiliza terrenos militares. La propia descripción del proyecto hecha por MIDA deja claro que el terreno usado para justificar esa intervención está a más de 60 millas del emplazamiento real de Stratos. Este recorrido cubrirá esas mismas 60 y tantas millas a pie, a lo largo de cinco días.
+          <span class="cite">Utah News Dispatch, "Hundreds Cry Out as Box Elder Commissioners Wave in Massive Data Center" (4 de mayo de 2026). <a href="https://utahnewsdispatch.com/2026/05/04/box-elder-commissioners-approve-data-center/" target="_blank">Lee el artículo</a> &middot; The Salt Lake Tribune, "A Fight Over One Word Could Help Decide Whether Box Elder Voters Get a Say" (15 de sep. de 2026). <a href="https://www.sltrib.com/news/2026/09/15/mida-law-key-arguments-against-box/" target="_blank">Lee el artículo</a> &middot; Descripción del proyecto hecha por MIDA. <a href="https://drive.google.com/file/d/1LlW83NZlxOu7RU2g-p58Atl2bDZttnE-/view?usp=sharing" target="_blank">Ver el documento</a></span>`
+        }
+      ],
+      actions: [
+        {
+          text: "El Box Elder Accountability Referendum (BEAR) es el grupo de residentes del condado de Box Elder que lucha por someter el proyecto a votación pública.",
+          cta: "Involúcrate con BEAR",
+          url: "https://www.stopstratos.org/"
+        },
+        {
+          text: "Stewardship Utah respalda la lucha de BEAR con un alcance de defensa más amplio: educar a la población, recaudar fondos y organizar la resistencia.",
+          cta: "Sigue el trabajo de Stewardship Utah",
+          url: "http://www.stewardshiputah.org/x96"
+        },
+        {
+          text: "Breathe Utah trabaja para proteger la salud de los habitantes de Utah y ha elaborado una explicación clara sobre los riesgos del Proyecto Stratos y cómo participar.",
+          cta: "Lee la explicación de Breathe Utah",
+          url: "https://www.breatheutah.org/news/the-stratos-project-questions-concerns-and-how-to-engage"
+        }
+      ]
+    }
   },
   {
     id: "state-capitol",
@@ -952,6 +1085,30 @@ const stories = [
       text: "Whoever holds this building next depends on who shows up to vote. Utah allows same-day registration, so there's no excuse not to.",
       cta: "Register to vote",
       url: "https://vote.utah.gov/register/"
+    },
+    es: {
+      label: "~Milla 256 · Capitolio del Estado de Utah",
+      title: "La Meta Está en las Escalinatas del Capitolio",
+      sections: [
+        {
+          heading: "Por Qué Estamos Aquí",
+          html: `Todas las historias de este mapa, políticas hídricas, desvíos de agua para la agricultura, proyectos de ley sobre calzadas, permisos para centros de datos, se originan en decisiones tomadas dentro de este edificio. La Legislatura de Utah controla los derechos de agua, los incentivos fiscales y las normas de evaluación ambiental que determinan si el Gran Lago Salado recibe el agua que necesita. Correr 256 millas alrededor del lago no significa nada por sí solo; solo importa si se convierte en presión sobre quienes trabajan aquí.`
+        },
+        {
+          heading: "Qué Se Puede Hacer",
+          html: `Las elecciones determinan quién ocupa estos cargos, y las contiendas locales y fuera de ciclo en Utah suelen decidirse por unos pocos cientos de votos. Presentarse, ya sea en las urnas o en los periodos de comentarios públicos sobre proyectos de ley como los de otras paradas de este mapa, es una de las formas más directas que tienen los habitantes de Utah de influir en el futuro del lago.`
+        },
+        {
+          heading: "Quiénes Trabajan en Ello",
+          html: `<a href="https://www.stewardshiputah.org/our-work" target="_blank">Stewardship Utah</a>, antes conocido como Rural Utah Project, trabaja para elegir candidatos comprometidos con el medio ambiente y aprobar políticas climáticas y de agua en la legislatura estatal. Su labor ayudó a aprobar la ley HB 220 en 2023, los primeros límites estatales a la contaminación industrial por bromo y una de las leyes de calidad del aire más importantes aprobadas en Utah en décadas. <a href="https://www.stewardshiputah.org/our-work" target="_blank">Consulta su trayectoria completa</a>.
+          <span class="cite">Stewardship Utah, "About: Learn About Our Work."</span>`
+        }
+      ],
+      action: {
+        text: "Quién ocupe este edificio después depende de quién se presente a votar. Utah permite el registro el mismo día de la elección, así que no hay excusa para no hacerlo.",
+        cta: "Regístrate para votar",
+        url: "https://vote.utah.gov/register/"
+      }
     }
   }
 ];
@@ -2089,6 +2246,11 @@ const infoPins = [
     label: "Agriculture Needs",
     html: `Agriculture accounts for roughly 70% of all water depletions in the Great Salt Lake Basin, most of it on thirsty crops like alfalfa. The green pixels are actual USGS land-cover data marking cropland and pasture, and the arrows point toward where that farmland is densest, water diverted out to fields like these before it ever reaches the lake.`,
     cite: `The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 38, 40; USGS/MRLC National Land Cover Database (NLCD), 2021.`,
+    es: {
+      label: "Necesidades de la Agricultura",
+      html: `La agricultura representa aproximadamente el 70% de todo el consumo de agua en la cuenca del Gran Lago Salado, la mayor parte en cultivos sedientos como la alfalfa. Los píxeles verdes son datos reales del USGS sobre cobertura del suelo que marcan tierras de cultivo y pastizales, y las flechas señalan dónde esas tierras son más densas, agua desviada hacia campos como estos antes de llegar al lago.`,
+      cite: `The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 38, 40; USGS/MRLC National Land Cover Database (NLCD), 2021.`
+    },
     highlight: {
       nlcd: nlcdAgricultureMask,
       arrows: [[[40.83,-112.06],[40.60,-112.05]], [[40.80,-112.03],[40.36,-111.93]]]
@@ -2100,6 +2262,11 @@ const infoPins = [
     label: "Main Tributaries",
     html: `The Bear, Weber, and Jordan Rivers are the Great Salt Lake's three main tributaries. The glowing outline shows their full sub-basins, all the way up into the mountains where the water originates. Together they typically supply at least 60% of the water flowing in, and their delta wetlands are key stopover habitat for migratory waterfowl.`,
     cite: `The 4,200 Project Guidebook, Utah Rivers Council (2024), p. 14.`,
+    es: {
+      label: "Principales Afluentes",
+      html: `Los ríos Bear, Weber y Jordan son los tres principales afluentes del Gran Lago Salado. El contorno iluminado muestra sus cuencas completas, hasta las montañas donde nace el agua. En conjunto, suelen aportar al menos el 60% del agua que entra, y los humedales de sus deltas son un hábitat clave de parada para las aves acuáticas migratorias.`,
+      cite: `The 4,200 Project Guidebook, Utah Rivers Council (2024), p. 14.`
+    },
     highlight: {
       geoJSON: [gslBasinsGlow, flowlinesGlow],
       arrows: [[[41.53,-112.10],[41.45,-112.20]], [[41.23,-112.15],[41.15,-112.25]], [[40.87,-112.10],[40.80,-112.20]]]
@@ -2111,6 +2278,11 @@ const infoPins = [
     label: "Lake-Effect Snow",
     html: `Open water on the Great Salt Lake picks up moisture and drops it back onto the Wasatch, highlighted here by the actual boundary of the range, as snow. That lake effect adds 5&ndash;10% of Utah's snowpack, stretches the ski season by 5&ndash;7 weeks, and helps support 20,000 jobs and $1.2 billion a year in the ski industry.`,
     cite: `Great Salt Lake Commissioner's Office, "Industry and Recreation."`,
+    es: {
+      label: "Nieve por Efecto Lacustre",
+      html: `El agua abierta del Gran Lago Salado capta humedad y la devuelve sobre el Wasatch, resaltado aquí con el límite real de la cordillera, en forma de nieve. Ese efecto lacustre aporta entre el 5&ndash;10% de la nieve de Utah, alarga la temporada de esquí entre 5 y 7 semanas, y ayuda a sostener 20.000 empleos y $1.2 mil millones al año en la industria del esquí.`,
+      cite: `Great Salt Lake Commissioner's Office, "Industry and Recreation."`
+    },
     highlight: {
       geoJSON: wasatchGlow
     }
@@ -2121,6 +2293,11 @@ const infoPins = [
     label: "A Shared Watershed",
     html: `Nearly 80% of Utah's population lives within the Great Salt Lake's watershed. The red pixels are actual USGS land-cover data marking developed, urban land, concentrated in the corridor along the base of the Wasatch. What happens to the lake doesn't stay out here on the flats, it reaches every community between here and the mountains.`,
     cite: `National Geographic, "The Great Salt Lake Is in Crisis" (2026); USGS/MRLC National Land Cover Database (NLCD), 2021.`,
+    es: {
+      label: "Una Cuenca Compartida",
+      html: `Casi el 80% de la población de Utah vive dentro de la cuenca del Gran Lago Salado. Los píxeles rojos son datos reales del USGS sobre suelo urbano desarrollado, concentrados en el corredor al pie del Wasatch. Lo que le pasa al lago no se queda en los llanos, llega a cada comunidad entre aquí y las montañas.`,
+      cite: `National Geographic, "The Great Salt Lake Is in Crisis" (2026); USGS/MRLC National Land Cover Database (NLCD), 2021.`
+    },
     highlight: {
       nlcd: nlcdUrbanMask
     }
@@ -2131,6 +2308,11 @@ const infoPins = [
     label: "Mining the Lake",
     html: `Solar evaporation ponds like the ones highlighted here produce magnesium, salt, and potash. That industry, together with brine shrimp harvesting and recreation, contributes roughly $1.3 billion to Utah's GDP each year, and the lake alone supplies 40&ndash;50% of the world's brine shrimp eggs, a staple food source for farmed fish and shrimp worldwide.`,
     cite: `National Geographic, "The Great Salt Lake Is in Crisis" (2026).`,
+    es: {
+      label: "Extracción en el Lago",
+      html: `Los estanques de evaporación solar como los que se destacan aquí producen magnesio, sal y potasa. Esa industria, junto con la cosecha de artemias y la recreación, aporta cerca de $1.3 mil millones al PIB de Utah cada año, y el lago por sí solo suministra entre el 40&ndash;50% de los huevos de artemia del mundo, un alimento básico para peces y camarones de cultivo en todo el planeta.`,
+      cite: `National Geographic, "The Great Salt Lake Is in Crisis" (2026).`
+    },
     highlight: {
       polygons: [[[40.762,-112.300],[40.765,-112.265],[40.748,-112.245],[40.730,-112.260],[40.728,-112.295],[40.745,-112.312],[40.762,-112.300]]]
     }
@@ -2217,52 +2399,183 @@ infoPins.forEach(pin => {
   }
 });
 
+// ── i18n: language state, string tables, and per-item translation lookup ───
+let currentLang = 'en';
+
+function loc(obj, field) {
+  return (currentLang === 'es' && obj.es && obj.es[field] !== undefined) ? obj.es[field] : obj[field];
+}
+function stopSections(stop) {
+  const en = stop.sections;
+  const esSecs = (currentLang === 'es' && stop.es && stop.es.sections) ? stop.es.sections : null;
+  if (!esSecs) return en;
+  return en.map((sec, i) => ({
+    kind: sec.kind,
+    heading: esSecs[i] ? esSecs[i].heading : sec.heading,
+    html: esSecs[i] ? esSecs[i].html : sec.html
+  }));
+}
+function stopActions(stop) {
+  if (currentLang === 'es' && stop.es) {
+    return stop.es.actions || (stop.es.action ? [stop.es.action] : (stop.actions || (stop.action ? [stop.action] : [])));
+  }
+  return stop.actions || (stop.action ? [stop.action] : []);
+}
+function pinField(pin, field) {
+  return (currentLang === 'es' && pin.es && pin.es[field] !== undefined) ? pin.es[field] : pin[field];
+}
+
+const STRINGS = {
+  en: {
+    headerSub: "A Footprints Project",
+    headerTitle: `Where the <em>Water Was</em>`,
+    pageTitle: "Where the Water Was: Great Salt Lake Climate Stories",
+    legendRoute: "Route",
+    legendStory: "Story Stop",
+    legendDeeper: "Deeper Look",
+    timelapseCaption: `Landsat, 1984&ndash;2023 (latest available). <a href="https://svs.gsfc.nasa.gov/15020/" target="_blank">NASA Scientific Visualization Studio</a>`,
+    introKicker: "Where the Water Was",
+    introH2: "The Great Salt Lake is disappearing beneath our feet.",
+    introP: "We're running the full 256-mile perimeter of the lake over 5 days to raise awareness while there's still time to act. Along the way, this map stops at the places with real stories to tell, and the organizations already doing the work. Scroll down to follow the route and see what's at stake at each one.",
+    introStat1Label: "decline in the lake's water volume since its 1980s peak",
+    introStat2Label: "of lakebed exposed since 1986, an area bigger than Rhode Island",
+    introCite: `The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 7, 14. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Read the report</a> &middot; USGS, "Great Salt Lake 1986 and 2022," Utah Water Science Center. <a href="https://www.usgs.gov/media/before-after/great-salt-lake-1986-and-2022" target="_blank">Source</a>`,
+    introCta: "Take Action Now →",
+    introScrollCue: "Scroll to begin",
+    overviewKicker: "Explore the Route",
+    overviewH2: "Pick a stop, or just keep scrolling",
+    overviewP: "Every pin on the map marks a real place along the route with a real story: what's at risk there, what's being done about it, and how to help. Click one to jump straight there, or keep scrolling and we'll take you through them in order, mile by mile.",
+    contextKicker: "The Bigger Picture",
+    contextH2: "Take a deeper look to learn about the lake",
+    contextP: "These aren't stops on the route, they're context: the watershed, the cities, the farmland, and the industry all tied to the lake's health. Click one to see it highlighted on the map along with the data behind it.",
+    deeperLookLabel: "Deeper Look",
+    takeActionLabel: "Take Action",
+    viewOnGoogleMaps: "View on Google Maps →",
+    actionSummaryKicker: "Take Action",
+    actionSummaryH2: "Every action from this map, in one place",
+    actionSummaryP: "Circling the lake for 5 days draws attention. These are the concrete next steps that actually move water back into it."
+  },
+  es: {
+    headerSub: "Un Proyecto de Footprints",
+    headerTitle: `Donde <em>Estaba el Agua</em>`,
+    pageTitle: "Donde Estaba el Agua: Historias Climáticas del Gran Lago Salado",
+    legendRoute: "Ruta",
+    legendStory: "Parada con Historia",
+    legendDeeper: "Mirada Más Profunda",
+    timelapseCaption: `Landsat, 1984&ndash;2023 (más reciente disponible). <a href="https://svs.gsfc.nasa.gov/15020/" target="_blank">Estudio de Visualización Científica de la NASA</a>`,
+    introKicker: "Donde Estaba el Agua",
+    introH2: "El Gran Lago Salado está desapareciendo bajo nuestros pies.",
+    introP: "Vamos a recorrer las 256 millas de perímetro del lago en 5 días para crear conciencia mientras todavía hay tiempo de actuar. Durante el recorrido, este mapa se detiene en los lugares con historias reales, y en las organizaciones que ya están haciendo ese trabajo. Desplázate hacia abajo para seguir la ruta y ver lo que está en riesgo en cada parada.",
+    introStat1Label: "de descenso en el volumen de agua del lago desde su punto máximo en la década de 1980",
+    introStat2Label: "de lecho de lago expuesto desde 1986, un área más grande que Rhode Island",
+    introCite: `The 4,200 Project Guidebook, Utah Rivers Council (2024), pp. 7, 14. <a href="https://4200site.cdn.prismic.io/4200site/f10399e3-f226-4771-9724-db4b7ae0a71c_The+4_200+Project+Guidebook.pdf" target="_blank">Lee el informe</a> &middot; USGS, "Great Salt Lake 1986 and 2022," Utah Water Science Center. <a href="https://www.usgs.gov/media/before-after/great-salt-lake-1986-and-2022" target="_blank">Fuente</a>`,
+    introCta: "Actúa Ahora →",
+    introScrollCue: "Desplázate para comenzar",
+    overviewKicker: "Explora la Ruta",
+    overviewH2: "Elige una parada o simplemente sigue desplazándote",
+    overviewP: "Cada marcador en el mapa señala un lugar real a lo largo de la ruta con una historia auténtica: qué está en riesgo allí, qué se está haciendo al respecto y cómo puedes ayudar. Haz clic en uno para ir directo a ese punto, o sigue desplazándote y te guiaremos a través de ellos en orden, milla a milla.",
+    contextKicker: "Una Perspectiva Más Amplia",
+    contextH2: "Profundiza para conocer más sobre el lago",
+    contextP: "Estos puntos no son paradas de la ruta, sino contexto: la cuenca hidrográfica, las ciudades, las tierras agrícolas y la industria, todos vinculados a la salud del lago. Haz clic en uno para verlo resaltado en el mapa junto con los datos que lo respaldan.",
+    deeperLookLabel: "Mirada Más Profunda",
+    takeActionLabel: "Actúa",
+    viewOnGoogleMaps: "Ver en Google Maps →",
+    actionSummaryKicker: "Actúa",
+    actionSummaryH2: "Todas las acciones de este mapa, en un solo lugar",
+    actionSummaryP: "Rodear el lago durante 5 días llama la atención. Estos son los próximos pasos concretos que realmente devuelven agua al lago."
+  }
+};
+
+function applyStaticStrings() {
+  const s = STRINGS[currentLang];
+  document.title = s.pageTitle;
+  document.documentElement.lang = currentLang;
+  document.getElementById('header-sub').textContent = s.headerSub;
+  document.getElementById('header-title').innerHTML = s.headerTitle;
+  document.getElementById('legend-route').textContent = s.legendRoute;
+  document.getElementById('legend-story').textContent = s.legendStory;
+  document.getElementById('legend-deeper').textContent = s.legendDeeper;
+  document.getElementById('timelapse-caption').innerHTML = s.timelapseCaption;
+  document.getElementById('intro-kicker').textContent = s.introKicker;
+  document.getElementById('intro-h2').textContent = s.introH2;
+  document.getElementById('intro-p').textContent = s.introP;
+  document.getElementById('intro-stat1-label').textContent = s.introStat1Label;
+  document.getElementById('intro-stat2-label').textContent = s.introStat2Label;
+  document.getElementById('intro-cite').innerHTML = s.introCite;
+  document.getElementById('intro-cta').innerHTML = s.introCta;
+  document.getElementById('intro-scroll-cue').textContent = s.introScrollCue;
+  document.getElementById('overview-kicker').textContent = s.overviewKicker;
+  document.getElementById('overview-h2').textContent = s.overviewH2;
+  document.getElementById('overview-p').textContent = s.overviewP;
+  document.getElementById('context-kicker').textContent = s.contextKicker;
+  document.getElementById('context-h2').textContent = s.contextH2;
+  document.getElementById('context-p').textContent = s.contextP;
+}
+
 // ── Build the scrolling narrative from the same story/camp data ────────────
 const storyPane = document.getElementById('story-pane');
 const progressDots = document.getElementById('progress-dots');
 
+function storyStopHTML(stop) {
+  let html = '';
+  if (stop.heroImage) {
+    html += `<div class="section-hero"><img src="${stop.heroImage}" alt="${loc(stop, 'title')}" loading="lazy">`;
+    const credit = (currentLang === 'es' && stop.es && stop.es.heroCredit) ? stop.es.heroCredit : stop.heroCredit;
+    if (credit) html += `<span class="hero-credit">${credit}</span>`;
+    html += `</div>`;
+  }
+  html += `<div class="kicker">${loc(stop, 'label')}</div><h2>${loc(stop, 'title')}</h2>`;
+  stopSections(stop).forEach(sec => {
+    html += `<div class="story-section ${sec.kind}"><h3>${sec.heading}</h3><p>${sec.html}</p></div>`;
+  });
+  stopActions(stop).forEach(action => {
+    html += `<div class="action-step"><div class="action-label">${STRINGS[currentLang].takeActionLabel}</div><p>${action.text}</p><a href="${action.url}" target="_blank">${action.cta} →</a></div>`;
+  });
+  if (stop.googleMapsUrl && !stop.googleMapsUrl.includes('example')) {
+    html += `<a href="${stop.googleMapsUrl}" target="_blank" class="map-link">${STRINGS[currentLang].viewOnGoogleMaps}</a>`;
+  }
+  return html;
+}
+
+const storySectionEls = {};
 allStops.forEach(stop => {
   const section = document.createElement('section');
   section.className = 'scrolly-section';
   section.dataset.id = stop.id;
-
-  let html = '';
-  if (stop.heroImage) {
-    html += `<div class="section-hero"><img src="${stop.heroImage}" alt="${stop.title}" loading="lazy">`;
-    if (stop.heroCredit) html += `<span class="hero-credit">${stop.heroCredit}</span>`;
-    html += `</div>`;
-  }
-  html += `<div class="kicker">${stop.label}</div><h2>${stop.title}</h2>`;
-  stop.sections.forEach(sec => {
-    html += `<div class="story-section ${sec.kind}"><h3>${sec.heading}</h3><p>${sec.html}</p></div>`;
-  });
-  (stop.actions || (stop.action ? [stop.action] : [])).forEach(action => {
-    html += `<div class="action-step"><div class="action-label">Take Action</div><p>${action.text}</p><a href="${action.url}" target="_blank">${action.cta} →</a></div>`;
-  });
-  if (stop.googleMapsUrl && !stop.googleMapsUrl.includes('example')) {
-    html += `<a href="${stop.googleMapsUrl}" target="_blank" class="map-link">View on Google Maps →</a>`;
-  }
-  section.innerHTML = html;
+  section.innerHTML = storyStopHTML(stop);
   storyPane.appendChild(section);
+  storySectionEls[stop.id] = section;
 
   const dot = document.createElement('div');
   dot.className = 'progress-dot';
-  dot.title = stop.title;
+  dot.title = loc(stop, 'title');
   dot.addEventListener('click', () => scrollToStop(stop.id));
   progressDots.appendChild(dot);
 });
 
+function rerenderStorySections() {
+  allStops.forEach(stop => {
+    const section = storySectionEls[stop.id];
+    if (section) section.innerHTML = storyStopHTML(stop);
+  });
+  dotEls.forEach((dot, i) => { dot.title = loc(allStops[i], 'title'); });
+}
+
 // ── Interactive map-overview list: click a stop to jump straight there ─────
 const overviewList = document.getElementById('overview-list');
-allStops.forEach(stop => {
-  const item = document.createElement('div');
-  item.className = 'overview-item';
-  item.innerHTML = `<span class="overview-dot ${stop.type}"></span>
-    <div><div class="overview-item-label">${stop.label}</div><div class="overview-item-title">${stop.title}</div></div>
-    <span class="overview-arrow">→</span>`;
-  item.addEventListener('click', () => scrollToStop(stop.id));
-  overviewList.appendChild(item);
-});
+function renderOverviewList() {
+  overviewList.innerHTML = '';
+  allStops.forEach(stop => {
+    const item = document.createElement('div');
+    item.className = 'overview-item';
+    item.innerHTML = `<span class="overview-dot ${stop.type}"></span>
+      <div><div class="overview-item-label">${loc(stop, 'label')}</div><div class="overview-item-title">${loc(stop, 'title')}</div></div>
+      <span class="overview-arrow">→</span>`;
+    item.addEventListener('click', () => scrollToStop(stop.id));
+    overviewList.appendChild(item);
+  });
+}
+renderOverviewList();
 
 // ── "The Bigger Picture" list: click a context pin to fly there and open it ─
 function focusInfoPin(id) {
@@ -2273,34 +2586,68 @@ function focusInfoPin(id) {
   setTimeout(() => marker.openPopup(), 400);
 }
 const contextList = document.getElementById('context-list');
-infoPins.forEach(pin => {
-  const item = document.createElement('div');
-  item.className = 'overview-item';
-  item.innerHTML = `<span class="overview-dot context"></span>
-    <div><div class="overview-item-label">Deeper Look</div><div class="overview-item-title">${pin.label}</div></div>
-    <span class="overview-arrow">→</span>`;
-  item.addEventListener('click', () => focusInfoPin(pin.id));
-  contextList.appendChild(item);
-});
+function renderContextList() {
+  contextList.innerHTML = '';
+  infoPins.forEach(pin => {
+    const item = document.createElement('div');
+    item.className = 'overview-item';
+    item.innerHTML = `<span class="overview-dot context"></span>
+      <div><div class="overview-item-label">${STRINGS[currentLang].deeperLookLabel}</div><div class="overview-item-title">${pinField(pin, 'label')}</div></div>
+      <span class="overview-arrow">→</span>`;
+    item.addEventListener('click', () => focusInfoPin(pin.id));
+    contextList.appendChild(item);
+  });
+}
+renderContextList();
+
+function updatePinPopups() {
+  infoPins.forEach(pin => {
+    const marker = infoMarkerById[pin.id];
+    if (!marker) return;
+    marker.setPopupContent(
+      `<span class="pin-popup-label">${pinField(pin, 'label')}</span><span class="pin-popup-text">${pinField(pin, 'html')}</span><span class="pin-popup-cite">${pinField(pin, 'cite')}</span>`
+    );
+  });
+}
 
 // ── Bottom action summary: every story's action step, gathered in one place ─
 const actionSection = document.createElement('section');
 actionSection.className = 'scrolly-section';
 actionSection.id = 'action-summary-section';
 actionSection.dataset.id = 'action-summary';
-let actionHtml = `<div class="kicker">Take Action</div><h2>Every action from this map, in one place</h2><p>Circling the lake for 5 days draws attention. These are the concrete next steps that actually move water back into it.</p><ul class="action-summary-list">`;
-allStops.forEach(stop => {
-  (stop.actions || (stop.action ? [stop.action] : [])).forEach(action => {
-    actionHtml += `<li class="action-summary-item"><span class="action-summary-source">${stop.label}</span><p>${action.text} <a href="${action.url}" target="_blank">${action.cta} →</a></p></li>`;
+function renderActionSummary() {
+  const s = STRINGS[currentLang];
+  let actionHtml = `<div class="kicker">${s.actionSummaryKicker}</div><h2>${s.actionSummaryH2}</h2><p>${s.actionSummaryP}</p><ul class="action-summary-list">`;
+  allStops.forEach(stop => {
+    stopActions(stop).forEach(action => {
+      actionHtml += `<li class="action-summary-item"><span class="action-summary-source">${loc(stop, 'label')}</span><p>${action.text} <a href="${action.url}" target="_blank">${action.cta} →</a></p></li>`;
+    });
   });
-});
-actionHtml += `</ul>`;
-actionSection.innerHTML = actionHtml;
+  actionHtml += `</ul>`;
+  actionSection.innerHTML = actionHtml;
+}
+renderActionSummary();
 storyPane.appendChild(actionSection);
 
 const sectionEls = Array.from(document.querySelectorAll('.scrolly-section'));
 const dotEls = Array.from(progressDots.children);
 const overviewIds = new Set(['intro', 'map-overview', 'context', 'action-summary']);
+
+// ── Language toggle: English / Español ──────────────────────────────────
+function setLanguage(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  applyStaticStrings();
+  rerenderStorySections();
+  renderOverviewList();
+  renderContextList();
+  renderActionSummary();
+  updatePinPopups();
+}
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+});
 
 // ── Scrollytelling: map follows the section currently in view ──────────────
 let activeMarkerEl = null;
